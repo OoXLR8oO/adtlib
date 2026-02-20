@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "adtlib"
+version = "0.1.0"
+description = "A small package containing basic classes representing popular ADTs."
+readme = "README.md"
+requires-python = ">=3.14"
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+authors = [
+  { name = "Kartik Punna", email = "kartikpunna@gmail.com" },
+]
+
+keywords = ["data-structures", "adt", "algorithms", "stack", "queue"]
+
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+Homepage = "https://github.com/<your-username>/adtlib"
+Issues = "https://github.com/<your-username>/adtlib/issues"
+Repository = "https://github.com/<your-username>/adtlib"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/adtlib"]
