@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "adtlib"
-version = "0.1.0"
+version = "0.1.2"
 description = "A small package containing basic classes representing popular ADTs."
 readme = "README.md"
 requires-python = ">=3.14"
@@ -25,9 +25,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/<your-username>/adtlib"
-Issues = "https://github.com/<your-username>/adtlib/issues"
-Repository = "https://github.com/<your-username>/adtlib"
+Homepage = "https://github.com/OoXLR8oO/adtlib"
+Issues = "https://github.com/OoXLR8oO/adtlib/issues"
+Repository = "https://github.com/OoXLR8oO/adtlib"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/adtlib"]
+packages = ["adtlib"]
