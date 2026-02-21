@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Any, Iterator, Iterable
+from typing import Any, Iterator, Iterable, Tuple
 from collections import deque
+import heapq
 
 
 @dataclass
@@ -97,6 +98,231 @@ class Queue:
     def is_empty(self) -> bool:
         """
         Check whether the queue contains any items.
+
+        :return: True if the queue is empty, False otherwise
+        :rtype: bool
+        """
+        return not self._data
+
+
+@dataclass
+class Deque:
+    """
+    Double-ended queue (Deque).
+
+    A deque ADT supporting insertion and removal of elements
+    from both the front and the back.
+
+    :param _data: Internal storage for deque items
+    :type _data: deque[Any]
+    """
+    _data: deque[Any] = field(default_factory=deque, repr=False)
+
+
+    def __len__(self) -> int:
+        """
+        Return the number of items in the deque.
+
+        :return: Number of items currently stored
+        :rtype: int
+        """
+        return len(self._data)
+
+    def __iter__(self) -> Iterator[Any]:
+        """
+        Iterate over items from front to back.
+
+        :return: Iterator yielding items from front to back
+        :rtype: Iterator[Any]
+        """
+        return iter(self._data)
+
+    def __reversed__(self) -> Iterator[Any]:
+        """
+        Iterate over items from back to front.
+
+        :return: Reverse iterator yielding items
+        :rtype: Iterator[Any]
+        """
+        return reversed(self._data)
+
+    def __repr__(self) -> str:
+        """
+        Return a string representation of the deque.
+
+        :return: Human-readable string showing deque contents
+        :rtype: str
+        """
+        return f"Deque({list(self._data)!r})"
+        
+
+    @property
+    def data(self) -> Iterable[Any]:
+        """
+        Return a read-only view of the deque contents.
+
+        :return: Iterable of items currently stored
+        :rtype: Iterable[Any]
+        """
+        return self._data
+
+
+    def append(self, item: Any) -> None:
+        """
+        Add an item to the back of the deque.
+
+        :param item: Item to add
+        :type item: Any
+        """
+        self._data.append(item)
+
+    def append_left(self, item: Any) -> None:
+        """
+        Add an item to the front of the deque.
+
+        :param item: Item to add
+        :type item: Any
+        """
+        self._data.appendleft(item)
+
+    def pop(self) -> Any:
+        """
+        Remove and return the back item.
+
+        :return: The last item
+        :rtype: Any
+        :raises IndexError: If the deque is empty
+        """
+        if self.is_empty():
+            raise IndexError("Cannot pop from empty Deque")
+        return self._data.pop()
+
+    def pop_left(self) -> Any:
+        """
+        Remove and return the front item.
+
+        :return: The first item
+        :rtype: Any
+        :raises IndexError: If the deque is empty
+        """
+        if self.is_empty():
+            raise IndexError("Cannot pop_left from empty Deque")
+        return self._data.popleft()
+
+    def peek_front(self) -> Any:
+        """
+        Return the front item without removing it.
+
+        :return: The first item
+        :rtype: Any
+        :raises IndexError: If the deque is empty
+        """
+        if self.is_empty():
+            raise IndexError("Cannot peek_front from empty Deque")
+        return self._data[0]
+
+    def peek_back(self) -> Any:
+        """
+        Return the back item without removing it.
+
+        :return: The last item
+        :rtype: Any
+        :raises IndexError: If the deque is empty
+        """
+        if self.is_empty():
+            raise IndexError("Cannot peek_back from empty Deque")
+        return self._data[-1]
+
+    def is_empty(self) -> bool:
+        """
+        Check whether the deque contains any items.
+
+        :return: True if the deque is empty, False otherwise
+        :rtype: bool
+        """
+        return not self._data
+
+
+@dataclass
+class PriorityQueue:
+    """
+    Priority queue where each element has a priority.
+
+    Items are retrieved in order of priority (lowest number = highest priority).
+
+    :param _data: Internal storage as a min-heap of tuples (priority, item)
+    :type _data: list[Tuple[int, Any]]
+    """
+    _data: list[Tuple[int, Any]] = field(default_factory=list, repr=False)
+
+
+    def __len__(self) -> int:
+        """
+        Return the number of items in the priority queue.
+
+        :return: Number of items currently stored
+        :rtype: int
+        """
+        return len(self._data)
+
+    def __iter__(self) -> Iterator[Any]:
+        """
+        Iterate over items by heap order (not strictly priority order).
+
+        :return: Iterator yielding items in heap order
+        :rtype: Iterator[Any]
+        """
+        return (item for _, item in self._data)
+
+    def __repr__(self) -> str:
+        """
+        Return a string representation of the priority queue.
+
+        :return: Human-readable string showing queue contents with priorities
+        :rtype: str
+        """
+        return f"PriorityQueue({self._data!r})"
+
+
+
+    def push(self, item: Any, priority: int) -> None:
+        """
+        Add an item with a given priority.
+
+        :param item: Item to add
+        :type item: Any
+        :param priority: Priority of the item (lower = higher priority)
+        :type priority: int
+        """
+        heapq.heappush(self._data, (priority, item))
+
+    def pop(self) -> Any:
+        """
+        Remove and return the item with the highest priority (lowest number).
+
+        :return: Item with the highest priority
+        :rtype: Any
+        :raises IndexError: If the priority queue is empty
+        """
+        if self.is_empty():
+            raise IndexError("Cannot pop from empty PriorityQueue")
+        return heapq.heappop(self._data)[1]
+
+    def peek(self) -> Any:
+        """
+        Return the item with the highest priority without removing it.
+
+        :return: Item with the highest priority
+        :rtype: Any
+        :raises IndexError: If the priority queue is empty
+        """
+        if self.is_empty():
+            raise IndexError("Cannot peek from empty PriorityQueue")
+        return self._data[0][1]
+
+    def is_empty(self) -> bool:
+        """
+        Check whether the priority queue contains any items.
 
         :return: True if the queue is empty, False otherwise
         :rtype: bool

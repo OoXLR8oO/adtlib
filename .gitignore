@@ -11,3 +11,6 @@ wheels/
 
 # Custom files
 /cmd.txt
+
+# Custom folder
+tests
