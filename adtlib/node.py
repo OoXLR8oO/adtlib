@@ -54,6 +54,12 @@ class GraphNode(BaseNode):
         neigh_vals = [n.value for n in self._neighbours] if self._neighbours else []
         return f"GraphNode(value={self.value}, neighbours={neigh_vals})"
 
+    def __hash__(self):
+        return id(self)
+
+    def __eq__(self, node: GraphNode):
+        return id(self) == id(node)
+
 
     @property
     def value(self) -> int | float | None:
@@ -76,14 +82,19 @@ class GraphNode(BaseNode):
         self._value = val
 
     @property
-    def neighbours(self) -> Optional[List[GraphNode]]:
+    def neighbours(self) -> List[GraphNode]:
         """
         Get the list of neighbours connected to this node.
+        This returns a shallow copy with `.copy()`. External
+        mutations will not affect the internal list, but mutating 
+        the values in this list will affect the class' internal list.
 
-        :return: List of neighbour nodes or None
-        :rtype: Optional[List[GraphNode]]
+        :return: List of neighbour nodes (or an empty list)
+        :rtype: List[GraphNode]
         """
-        return self._neighbours
+        if self._neighbours is None:
+            return []
+        return self._neighbours.copy()
 
     @neighbours.setter
     def neighbours(self, val: Optional[List[GraphNode]]) -> None:
@@ -126,14 +137,11 @@ class GraphNode(BaseNode):
         if node in self._neighbours:
             self._neighbours.remove(node)
 
-        if not self._neighbours:
-            self._neighbours = None
-
     def detach_neighbours(self) -> None:
         """
         Remove all neighbours from this node.
         """
-        self._neighbours = None
+        self._neighbours = []
 
     def degree(self) -> int:
         """

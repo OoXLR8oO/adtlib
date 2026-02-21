@@ -104,6 +104,10 @@ class Queue:
         """
         return not self._data
 
+    def clear(self) -> None:
+        """Remove all items from the queue."""
+        self._data.clear()
+
 
 @dataclass
 class Deque:
@@ -242,6 +246,10 @@ class Deque:
         """
         return not self._data
 
+    def clear(self) -> None:
+        """Remove all items from the deque."""
+        self._data.clear()
+
 
 @dataclass
 class PriorityQueue:
@@ -328,3 +336,7 @@ class PriorityQueue:
         :rtype: bool
         """
         return not self._data
+
+    def clear(self) -> None:
+        """Remove all items from the priority queue."""
+        self._data.clear()
