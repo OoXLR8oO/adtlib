@@ -10,8 +10,11 @@ class BaseNode(ABC):
 
     :param _value: The value stored in the node (int, float, or None)
     :type _value: int | float | None
+    :param _neighbours: Get the list of neighbours connected to this node.
+    :type _value: Optional[List[BaseNode]]
     """
     _value: int | float | None = None
+    _neighbours: Optional[List[BaseNode]] = field(default=None, repr=False)
 
 
     @property
@@ -33,6 +36,16 @@ class BaseNode(ABC):
 
         :param val: The value to store in the node
         :type val: int | float | None
+        """
+        ...
+
+    @property
+    @abstractmethod
+    def neighbours(self) -> List[BaseNode]:
+        """
+        Return a list of nodes connected to this node.
+        For graphs, this is neighbours.
+        For binary trees, left/right children.
         """
         ...
 
@@ -254,6 +267,10 @@ class LinkedNode(BaseNode):
 
         if node and node._previous is not self:
             node._previous = self
+
+    @property
+    def neighbours(self) -> List[BaseNode]:
+        return [n for n in (self.next,) if n is not None]  # linear chain
             
 
     def add_previous(self, node: LinkedNode) -> None:
@@ -281,3 +298,133 @@ class LinkedNode(BaseNode):
         if self._previous: self._previous._next = None
         if self._next: self._next._previous = None
         self._previous = self._next = None
+
+
+@dataclass
+class TreeNode(BaseNode):
+    """
+    Node used for binary tree structures.
+
+    :param _value: The value stored in the node (int, float, or None)
+    :type _value: int | float | None
+    :param _left: Left child node or None
+    :type _left: Optional[TreeNode]
+    :param _right: Right child node or None
+    :type _right: Optional[TreeNode]
+    :param _parent: Parent node or None
+    :type _parent: Optional[TreeNode]
+    """
+    _left: Optional[TreeNode] = field(default=None, repr=False)
+    _right: Optional[TreeNode] = field(default=None, repr=False)
+    _parent: Optional[TreeNode] = field(default=None, repr=False)
+
+
+    def __repr__(self):
+        left_val = self.left.value if self.left else None
+        right_val = self.right.value if self.right else None
+        return f"TreeNode(value={self.value}, left={left_val}, right={right_val})"
+
+
+    @property
+    def value(self) -> int | float | None:
+        """
+        Get the value stored in this tree node.
+
+        :return: The current value of the node
+        :rtype: int | float | None
+        """
+        return self._value
+
+    @value.setter
+    def value(self, val) -> None:
+        """
+        Set the value stored in this tree node.
+
+        :param val: The value to store
+        :type val: int | float | None
+        """
+        self._value = val
+
+    @property
+    def left(self) -> Optional[TreeNode]:
+        """
+        Get the left child node.
+
+        :return: The left child or None
+        :rtype: Optional[TreeNode]
+        """
+        return self._left
+
+    @left.setter
+    def left(self, node: Optional[TreeNode]) -> None:
+        """
+        Set the left child node.
+
+        :param node: Node to assign as left child
+        :type node: Optional[TreeNode]
+        :raises ValueError: If attempting to assign the node to itself
+        """
+        if node is self:
+            raise ValueError("A node cannot be its own child")
+
+        if self._left:
+            self._left._parent = None
+
+        self._left = node
+
+        if node:
+            node._parent = self
+
+    @property
+    def right(self) -> Optional[TreeNode]:
+        """
+        Get the right child node.
+
+        :return: The right child or None
+        :rtype: Optional[TreeNode]
+        """
+        return self._right
+
+    @right.setter
+    def right(self, node: Optional[TreeNode]) -> None:
+        """
+        Set the right child node.
+
+        :param node: Node to assign as right child
+        :type node: Optional[TreeNode]
+        :raises ValueError: If attempting to assign the node to itself
+        """
+        if node is self:
+            raise ValueError("A node cannot be its own child")
+
+        if self._right:
+            self._right._parent = None
+
+        self._right = node
+
+        if node:
+            node._parent = self
+
+    @property
+    def parent(self) -> Optional[TreeNode]:
+        """
+        Get the parent node.
+
+        :return: The parent node or None
+        :rtype: Optional[TreeNode]
+        """
+        return self._parent
+
+    @property
+    def neighbours(self) -> List[BaseNode]:
+        return [child for child in (self.left, self.right) if child is not None]
+
+
+    def is_leaf(self) -> bool:
+        """
+        Determine whether this node is a leaf node.
+
+        :return: True if the node has no children, otherwise False
+        :rtype: bool
+        """
+        return self._left is None and self._right is None

@@ -1,4 +1,4 @@
-from adtlib.node import GraphNode, LinkedNode
+from adtlib.node import GraphNode, LinkedNode, TreeNode
 from adtlib.stack import Stack
 from adtlib.queue import Queue
 from adtlib.graph import Graph
@@ -40,79 +40,105 @@ from adtlib.graph import Graph
 # q1.dequeue()
 # print(q1)
 
-graph = Graph(_directed=False)
+# graph = Graph(_directed=False)
 
-for value in ["A", "B", "C", "D", "E", "F", "G", "H"]:
-    graph.add_node(GraphNode(value))
+# for value in ["A", "B", "C", "D", "E", "F", "G", "H"]:
+#     graph.add_node(GraphNode(value))
 
-a = graph.get_node("A")
-b = graph.get_node("B")
-c = graph.get_node("C")
-d = graph.get_node("D")
-e = graph.get_node("E")
-f = graph.get_node("F")
-g = graph.get_node("G")
-h = graph.get_node("H")
+# a = graph.get_node("A")
+# b = graph.get_node("B")
+# c = graph.get_node("C")
+# d = graph.get_node("D")
+# e = graph.get_node("E")
+# f = graph.get_node("F")
+# g = graph.get_node("G")
+# h = graph.get_node("H")
 
-graph.add_edge(a, b)
-graph.add_edge(a, c)
-graph.add_edge(b, d)
-graph.add_edge(c, d)
-graph.add_edge(d, e)
-graph.add_edge(e, f)
-graph.add_edge(f, g)
-graph.add_edge(g, h)
-graph.add_edge(h, a)
+# graph.add_edge(a, b)
+# graph.add_edge(a, c)
+# graph.add_edge(b, d)
+# graph.add_edge(c, d)
+# graph.add_edge(d, e)
+# graph.add_edge(e, f)
+# graph.add_edge(f, g)
+# graph.add_edge(g, h)
+# graph.add_edge(h, a)
 
-for node in graph.nodes:
-    print(f"{node.value}: {[n.value for n in node.neighbours]}")
+# for node in graph.nodes:
+#     print(f"{node.value}: {[n.value for n in node.neighbours]}")
 
-print("BFS traversal starting at A:", graph.bfs(a))
-print("DFS traversal starting at A:", graph.dfs(a))
+# print("BFS traversal starting at A:", graph.bfs(a))
+# print("DFS traversal starting at A:", graph.dfs(a))
 
-graph.remove_edge(a, c)
+# graph.remove_edge(a, c)
 
-print("\nAfter removing edge A-C:")
-for node in graph.nodes:
-    print(f"{node.value}: {[n.value for n in node.neighbours]}")
+# print("\nAfter removing edge A-C:")
+# for node in graph.nodes:
+#     print(f"{node.value}: {[n.value for n in node.neighbours]}")
 
-print("BFS traversal starting at A:", graph.bfs(a))
-print("DFS traversal starting at A:", graph.dfs(a))
-
-
-print("===================================================================")
+# print("BFS traversal starting at A:", graph.bfs(a))
+# print("DFS traversal starting at A:", graph.dfs(a))
 
 
-# =========================
-# Directed Graph
-# =========================
+# print("===================================================================")
 
-graph = Graph(_directed=True)
 
-for value in ["A", "B", "C", "D", "E", "F", "G", "H"]:
-    graph.add_node(GraphNode(value))
+# # =========================
+# # Directed Graph
+# # =========================
 
-a = graph.get_node("A")
-b = graph.get_node("B")
-c = graph.get_node("C")
-d = graph.get_node("D")
-e = graph.get_node("E")
-f = graph.get_node("F")
-g = graph.get_node("G")
-h = graph.get_node("H")
+# graph = Graph(_directed=True)
 
-graph.add_edge(a, b)
-graph.add_edge(a, c)
-graph.add_edge(b, d)
-graph.add_edge(c, d)
-graph.add_edge(d, e)
-graph.add_edge(e, f)
-graph.add_edge(f, g)
-graph.add_edge(g, h)
-graph.add_edge(h, a)
+# for value in ["A", "B", "C", "D", "E", "F", "G", "H"]:
+#     graph.add_node(GraphNode(value))
 
-for node in graph.nodes:
-    print(f"{node.value}: {[n.value for n in node.neighbours]}")
+# a = graph.get_node("A")
+# b = graph.get_node("B")
+# c = graph.get_node("C")
+# d = graph.get_node("D")
+# e = graph.get_node("E")
+# f = graph.get_node("F")
+# g = graph.get_node("G")
+# h = graph.get_node("H")
 
-print("Directed BFS starting at A:", graph.bfs(a))
-print("Directed DFS starting at A:", graph.dfs(a))
+# graph.add_edge(a, b)
+# graph.add_edge(a, c)
+# graph.add_edge(b, d)
+# graph.add_edge(c, d)
+# graph.add_edge(d, e)
+# graph.add_edge(e, f)
+# graph.add_edge(f, g)
+# graph.add_edge(g, h)
+# graph.add_edge(h, a)
+
+# for node in graph.nodes:
+#     print(f"{node.value}: {[n.value for n in node.neighbours]}")
+
+# print("Directed BFS starting at A:", graph.bfs(a))
+# print("Directed DFS starting at A:", graph.dfs(a))
+# print("")
+# print(graph.get_node("A").children)
+# print(graph.get_node("A").neighbours)
+
+# Create nodes
+root = TreeNode("root")
+left_child = TreeNode("left")
+right_child = TreeNode("right")
+right_right_child = TreeNode("right right")
+
+# Link children to root
+root.left = left_child
+root.right = right_child
+right_child.right = right_right_child
+
+# Access neighbours (children)
+print(root.neighbours)  # [left_child, right_child]
+
+# Iterate over neighbours
+for child in root.neighbours:
+    print(f"Child value: {child.value}")
+
+# Output:
+# [TreeNode(value=left, left=None, right=None), TreeNode(value=right, left=None, right=right right)]
+# Child value: left
+# Child value: right
