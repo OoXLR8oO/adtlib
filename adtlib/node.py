@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, List
+from typing import Optional, List, Any
 from abc import ABC, abstractmethod
 
 
@@ -11,15 +11,15 @@ class BaseNode(ABC):
     :param _value: The value stored in the node (int, float, or None)
     :type _value: int | float | None
     :param _neighbours: Get the list of neighbours connected to this node.
-    :type _value: Optional[List[BaseNode]]
+    :type _value: Any
     """
-    _value: int | float | None = None
+    _value: Any = None
     _neighbours: Optional[List[BaseNode]] = field(default=None, repr=False)
 
 
     @property
     @abstractmethod
-    def value(self) -> int | float | None:
+    def value(self) -> Any:
         """
         Get the value stored in this node.
 
@@ -156,6 +156,10 @@ class GraphNode(BaseNode):
         """
         self._neighbours = []
 
+    def has_neighbour(self, node: GraphNode) -> bool:
+        """Check if a given node is a neighbour."""
+        return node in self._neighbours if self._neighbours else False
+
     def degree(self) -> int:
         """
         Return the number of neighbours (outgoing edges).
@@ -189,7 +193,7 @@ class LinkedNode(BaseNode):
 
 
     @property
-    def value(self) -> int | float | None:
+    def value(self) -> Any:
         """
         Get the value stored in this linked node.
 
@@ -326,7 +330,7 @@ class TreeNode(BaseNode):
 
 
     @property
-    def value(self) -> int | float | None:
+    def value(self) -> Any:
         """
         Get the value stored in this tree node.
 

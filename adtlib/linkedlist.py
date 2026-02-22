@@ -17,9 +17,10 @@ class SinglyLinkedList:
     :param _size: Number of elements in the list
     :type _size: int
     """
-    head: Optional[LinkedNode] = field(default=None, repr=False)
-    tail: Optional[LinkedNode] = field(default=None, repr=False)
+    _head: Optional[LinkedNode] = field(default=None, repr=False)
+    _tail: Optional[LinkedNode] = field(default=None, repr=False)
     _size: int = field(default=0, repr=False)
+
 
     def __len__(self) -> int:
         """
@@ -42,6 +43,32 @@ class SinglyLinkedList:
             yield current.value
             current = current.next
 
+
+    @property
+    def head(self) -> LinkedNode:
+        return self._head
+
+    @head.setter
+    def head(self, node: LinkedNode) -> None:
+        self._head = node
+
+    @property
+    def tail(self) -> LinkedNode:
+        return self._tail
+
+    @tail.setter
+    def tail(self, node: LinkedNode) -> None:
+        self._tail = node
+
+    @property
+    def size(self) -> int:
+        return self._size
+
+    @size.setter
+    def size(self, val: int) -> None:
+        self._size = val
+
+
     def is_empty(self) -> bool:
         """
         Check if the list is empty.
@@ -49,7 +76,7 @@ class SinglyLinkedList:
         :return: True if empty, False otherwise
         :rtype: bool
         """
-        return self._size == 0
+        return self.size == 0
 
     def append(self, value: Any) -> None:
         """
@@ -64,7 +91,7 @@ class SinglyLinkedList:
         else:
             self.tail.add_next(node)
             self.tail = node
-        self._size += 1
+        self.size += 1
 
     def prepend(self, value: Any) -> None:
         """
@@ -79,7 +106,7 @@ class SinglyLinkedList:
         else:
             node.add_next(self.head)
             self.head = node
-        self._size += 1
+        self.size += 1
 
     def pop_front(self) -> Any:
         """
@@ -115,9 +142,9 @@ class SinglyLinkedList:
             current = self.head
             while current.next is not self.tail:
                 current = current.next
-            current._next = None
+            current.next = None
             self.tail = current
-        self._size -= 1
+        self.size -= 1
         return value
 
     def find(self, value: Any) -> Optional[LinkedNode]:
@@ -151,9 +178,10 @@ class DoublyLinkedList:
     :param _size: Number of elements in the list
     :type _size: int
     """
-    head: Optional[LinkedNode] = field(default=None, repr=False)
-    tail: Optional[LinkedNode] = field(default=None, repr=False)
+    _head: Optional[LinkedNode] = field(default=None, repr=False)
+    _tail: Optional[LinkedNode] = field(default=None, repr=False)
     _size: int = field(default=0, repr=False)
+
 
     def __len__(self) -> int:
         """
@@ -176,6 +204,32 @@ class DoublyLinkedList:
             yield current.value
             current = current.next
 
+
+    @property
+    def head(self) -> Optional[LinkedNode]:
+        return self._head
+
+    @head.setter
+    def head(self, node: Optional[LinkedNode]) -> None:
+        self._head = node
+
+    @property
+    def tail(self) -> Optional[LinkedNode]:
+        return self._tail
+
+    @tail.setter
+    def tail(self, node: Optional[LinkedNode]) -> None:
+        self._tail = node
+
+    @property
+    def size(self) -> int:
+        return self._size
+
+    @size.setter
+    def size(self, val: int) -> None:
+        self._size = val
+
+
     def is_empty(self) -> bool:
         """
         Check if the list is empty.
@@ -183,7 +237,7 @@ class DoublyLinkedList:
         :return: True if empty, False otherwise
         :rtype: bool
         """
-        return self._size == 0
+        return self.size == 0
 
     def append(self, value: Any) -> None:
         """
@@ -196,9 +250,10 @@ class DoublyLinkedList:
         if not self.head:
             self.head = self.tail = node
         else:
-            self.tail.add_next(node)
+            node.previous = self.tail
+            self.tail.next = node
             self.tail = node
-        self._size += 1
+        self.size += 1
 
     def prepend(self, value: Any) -> None:
         """
@@ -211,9 +266,10 @@ class DoublyLinkedList:
         if not self.head:
             self.head = self.tail = node
         else:
-            node.add_next(self.head)
+            node.next = self.head
+            self.head.previous = node
             self.head = node
-        self._size += 1
+        self.size += 1
 
     def pop_front(self) -> Any:
         """
@@ -231,7 +287,7 @@ class DoublyLinkedList:
             self.head.previous = None
         else:
             self.tail = None
-        self._size -= 1
+        self.size -= 1
         return value
 
     def pop_back(self) -> Any:
@@ -250,7 +306,7 @@ class DoublyLinkedList:
             self.tail.next = None
         else:
             self.head = None
-        self._size -= 1
+        self.size -= 1
         return value
 
     def find(self, value: Any) -> Optional[LinkedNode]:
@@ -276,25 +332,22 @@ class DoublyLinkedList:
         :param node: Node to remove
         :type node: LinkedNode
         """
-        if node.previous:
-            node.previous._next = node.next
-        else:
-            self.head = node.next
+        if node is self.head:
+            self.pop_front()
+            return
 
-        if node.next:
-            node.next._previous = node.previous
-        else:
-            self.tail = node.previous
+        if node is self.tail:
+            self.pop_back()
+            return
 
-        # Only reset this node's own links
-        node._previous = node._next = None
+        # Only adjust one side per link
+        node.previous.next = node.next
 
-        self._size -= 1
+        # Clear node links
+        node.previous = None
+        node.next = None
 
-
-from dataclasses import dataclass, field
-from typing import Any, Iterator, Optional
-from adtlib.node import LinkedNode
+        self.size -= 1
 
 
 @dataclass
@@ -312,9 +365,10 @@ class CircularLinkedList:
     :param _size: Number of elements in the list
     :type _size: int
     """
-    head: Optional[LinkedNode] = field(default=None, repr=False)
-    tail: Optional[LinkedNode] = field(default=None, repr=False)
+    _head: Optional[LinkedNode] = field(default=None, repr=False)
+    _tail: Optional[LinkedNode] = field(default=None, repr=False)
     _size: int = field(default=0, repr=False)
+
 
     def __len__(self) -> int:
         """
@@ -340,6 +394,32 @@ class CircularLinkedList:
             yield current.value
             current = current.next
             count += 1
+
+
+    @property
+    def head(self) -> Optional[LinkedNode]:
+        return self._head
+
+    @head.setter
+    def head(self, node: Optional[LinkedNode]) -> None:
+        self._head = node
+
+    @property
+    def tail(self) -> Optional[LinkedNode]:
+        return self._tail
+
+    @tail.setter
+    def tail(self, node: Optional[LinkedNode]) -> None:
+        self._tail = node
+
+    @property
+    def size(self) -> int:
+        return self._size
+
+    @size.setter
+    def size(self, val: int) -> None:
+        self._size = val
+
 
     def is_empty(self) -> bool:
         """
