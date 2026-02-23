@@ -1,15 +1,17 @@
 from dataclasses import dataclass, field
-from typing import Any, Iterator, List
+from typing import Any, Iterator, List, Generic, TypeVar
+
+T = TypeVar("T")
 
 @dataclass
-class Stack:
+class Stack(Generic[T]):
     """
     Last-in, first-out (LIFO) stack.
 
     :param _data: Internal storage for stack items
     :type _data: List[Any]
     """
-    _data: List[Any] = field(default_factory=list, repr=False)
+    _data: List[T] = field(default_factory=list, repr=False)
 
     def __len__(self) -> int:
         """
@@ -20,7 +22,7 @@ class Stack:
         """
         return len(self._data)
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iterator[T]:
         """
         Iterate from bottom to top of the stack.
 
@@ -29,7 +31,7 @@ class Stack:
         """
         return iter(self._data)
 
-    def __reversed__(self) -> Iterator[Any]:
+    def __reversed__(self) -> Iterator[T]:
         """
         Iterate from top to bottom of the stack.
 
@@ -48,7 +50,7 @@ class Stack:
         return f"Stack({self._data!r})"
 
     @property
-    def data(self) -> List[Any]:
+    def data(self) -> List[T]:
         """
         Get the internal stack list (read-only).
 
@@ -57,7 +59,7 @@ class Stack:
         """
         return self._data
 
-    def push(self, item: Any) -> None:
+    def push(self, item: T) -> None:
         """
         Add an item to the top of the stack.
 
@@ -65,7 +67,7 @@ class Stack:
         """
         self._data.append(item)
 
-    def pop(self) -> Any:
+    def pop(self) -> T:
         """
         Remove and return the top item.
 
@@ -77,7 +79,7 @@ class Stack:
             raise IndexError("Cannot pop from empty Stack")
         return self._data.pop()
 
-    def peek(self) -> Any:
+    def peek(self) -> T:
         """
         Return the top item without removing it.
 

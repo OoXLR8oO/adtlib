@@ -1,7 +1,10 @@
 from dataclasses import dataclass, field
+from adtlib.queue import Queue
 from typing import Any, List, Set, Dict
 from adtlib.node import GraphNode
 from collections import deque
+
+from adtlib.stack import Stack
 
 @dataclass
 class Graph:
@@ -116,44 +119,45 @@ class Graph:
         if not self.directed:
             node2.remove_neighbour(node1)
 
-    def bfs(self, start: GraphNode) -> List[Any]:
+    def bfs(self, start: GraphNode) -> List[GraphNode]:
         """
         Perform breadth-first search starting from a node.
 
         :param start: Starting node
         :type start: GraphNode
         :return: List of node values in BFS order
-        :rtype: List[Any]
+        :rtype: List[GraphNode]
         """
+        queue = Queue()
+        queue.enqueue(start)
         visited: Set[GraphNode] = set()
-        queue = deque([start])
-        order = []
-
-        while queue:
-            node = queue.popleft()
+        order: List[Any] = []
+        while not queue.is_empty():
+            node = queue.dequeue()
             if node in visited:
                 continue
             visited.add(node)
             order.append(node.value)
             for nbr in node.neighbours:
                 if nbr not in visited:
-                    queue.append(nbr)
+                    queue.enqueue(nbr)
         return order
 
-    def dfs(self, start: GraphNode) -> List[Any]:
+    def dfs(self, start: GraphNode) -> List[GraphNode]:
         """
         Perform depth-first search starting from a node.
 
         :param start: Starting node
         :type start: GraphNode
         :return: List of node values in DFS order
-        :rtype: List[Any]
+        :rtype: List[GraphNode]
         """
         visited: Set[GraphNode] = set()
-        stack = [start]
+        stack = Stack()
+        stack.push(start)
         order = []
 
-        while stack:
+        while not stack.is_empty():
             node = stack.pop()
             if node in visited:
                 continue
@@ -161,5 +165,5 @@ class Graph:
             order.append(node.value)
             for nbr in reversed(node.neighbours):
                 if nbr not in visited:
-                    stack.append(nbr)
+                    stack.push(nbr)
         return order

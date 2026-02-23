@@ -201,6 +201,7 @@ class BinarySearchTree:
         :type node: Optional[TreeNode]
         """
         self._root = node
+        
 
     def is_empty(self) -> bool:
         """

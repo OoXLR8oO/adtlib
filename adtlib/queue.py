@@ -1,11 +1,12 @@
 from dataclasses import dataclass, field
-from typing import Any, Iterator, Iterable, Tuple
+from typing import Any, Iterator, Iterable, Tuple, TypeVar, Generic
 from collections import deque
 import heapq
 
+T = TypeVar("T")
 
 @dataclass
-class Queue:
+class Queue(Generic[T]):
     """
     First-in, first-out (FIFO) queue.
 
@@ -14,7 +15,8 @@ class Queue:
     :param _data: Internal storage for queue items
     :type _data: deque[Any]
     """
-    _data: deque[Any] = field(default_factory=deque, repr=False)
+    _data: deque[T] = field(default_factory=deque, repr=False)
+    
 
     def __len__(self) -> int:
         """
@@ -25,7 +27,7 @@ class Queue:
         """
         return len(self._data)
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iterator[T]:
         """
         Iterate over items from front to back.
 
@@ -34,7 +36,7 @@ class Queue:
         """
         return iter(self._data)
 
-    def __reversed__(self) -> Iterator[Any]:
+    def __reversed__(self) -> Iterator[T]:
         """
         Iterate over items from back to front.
 
@@ -52,8 +54,9 @@ class Queue:
         """
         return f"Queue({list(self._data)!r})"
 
+
     @property
-    def data(self) -> Iterable[Any]:
+    def data(self) -> Iterable[T]:
         """
         Return a read-only view of the queue contents.
 
@@ -62,7 +65,8 @@ class Queue:
         """
         return self._data
 
-    def enqueue(self, item: Any) -> None:
+
+    def enqueue(self, item: T) -> None:
         """
         Add an item to the back of the queue.
 
@@ -71,7 +75,7 @@ class Queue:
         """
         self._data.append(item)
 
-    def dequeue(self) -> Any:
+    def dequeue(self) -> T:
         """
         Remove and return the front item from the queue.
 
@@ -83,7 +87,7 @@ class Queue:
             raise IndexError("Cannot dequeue from empty Queue")
         return self._data.popleft()
 
-    def peek(self) -> Any:
+    def peek(self) -> T:
         """
         Return the front item without removing it.
 
@@ -110,7 +114,7 @@ class Queue:
 
 
 @dataclass
-class Deque:
+class Deque(Generic[T]):
     """
     Double-ended queue (Deque).
 
@@ -120,7 +124,7 @@ class Deque:
     :param _data: Internal storage for deque items
     :type _data: deque[Any]
     """
-    _data: deque[Any] = field(default_factory=deque, repr=False)
+    _data: deque[T] = field(default_factory=deque, repr=False)
 
 
     def __len__(self) -> int:
@@ -132,7 +136,7 @@ class Deque:
         """
         return len(self._data)
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iterator[T]:
         """
         Iterate over items from front to back.
 
@@ -141,7 +145,7 @@ class Deque:
         """
         return iter(self._data)
 
-    def __reversed__(self) -> Iterator[Any]:
+    def __reversed__(self) -> Iterator[T]:
         """
         Iterate over items from back to front.
 
@@ -158,10 +162,10 @@ class Deque:
         :rtype: str
         """
         return f"Deque({list(self._data)!r})"
-        
+
 
     @property
-    def data(self) -> Iterable[Any]:
+    def data(self) -> Iterable[T]:
         """
         Return a read-only view of the deque contents.
 
@@ -171,7 +175,7 @@ class Deque:
         return self._data
 
 
-    def append(self, item: Any) -> None:
+    def append(self, item: T) -> None:
         """
         Add an item to the back of the deque.
 
@@ -180,7 +184,7 @@ class Deque:
         """
         self._data.append(item)
 
-    def append_left(self, item: Any) -> None:
+    def append_left(self, item: T) -> None:
         """
         Add an item to the front of the deque.
 
@@ -189,7 +193,7 @@ class Deque:
         """
         self._data.appendleft(item)
 
-    def pop(self) -> Any:
+    def pop(self) -> T:
         """
         Remove and return the back item.
 
@@ -201,7 +205,7 @@ class Deque:
             raise IndexError("Cannot pop from empty Deque")
         return self._data.pop()
 
-    def pop_left(self) -> Any:
+    def pop_left(self) -> T:
         """
         Remove and return the front item.
 
@@ -213,7 +217,7 @@ class Deque:
             raise IndexError("Cannot pop_left from empty Deque")
         return self._data.popleft()
 
-    def peek_front(self) -> Any:
+    def peek_front(self) -> T:
         """
         Return the front item without removing it.
 
@@ -225,7 +229,7 @@ class Deque:
             raise IndexError("Cannot peek_front from empty Deque")
         return self._data[0]
 
-    def peek_back(self) -> Any:
+    def peek_back(self) -> T:
         """
         Return the back item without removing it.
 
@@ -252,7 +256,7 @@ class Deque:
 
 
 @dataclass
-class PriorityQueue:
+class PriorityQueue(Generic[T]):
     """
     Priority queue where each element has a priority.
 
@@ -261,7 +265,7 @@ class PriorityQueue:
     :param _data: Internal storage as a min-heap of tuples (priority, item)
     :type _data: list[Tuple[int, Any]]
     """
-    _data: list[Tuple[int, Any]] = field(default_factory=list, repr=False)
+    _data: list[Tuple[int, T]] = field(default_factory=list, repr=False)
 
 
     def __len__(self) -> int:
@@ -273,7 +277,7 @@ class PriorityQueue:
         """
         return len(self._data)
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iterator[T]:
         """
         Iterate over items by heap order (not strictly priority order).
 
@@ -292,8 +296,7 @@ class PriorityQueue:
         return f"PriorityQueue({self._data!r})"
 
 
-
-    def push(self, item: Any, priority: int) -> None:
+    def push(self, item: T, priority: int) -> None:
         """
         Add an item with a given priority.
 
@@ -304,7 +307,7 @@ class PriorityQueue:
         """
         heapq.heappush(self._data, (priority, item))
 
-    def pop(self) -> Any:
+    def pop(self) -> T:
         """
         Remove and return the item with the highest priority (lowest number).
 
@@ -316,7 +319,7 @@ class PriorityQueue:
             raise IndexError("Cannot pop from empty PriorityQueue")
         return heapq.heappop(self._data)[1]
 
-    def peek(self) -> Any:
+    def peek(self) -> T:
         """
         Return the item with the highest priority without removing it.
 

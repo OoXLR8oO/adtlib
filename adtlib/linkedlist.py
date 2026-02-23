@@ -1,10 +1,12 @@
 from dataclasses import dataclass, field
-from typing import Any, Iterator, Optional
+from typing import Any, Iterator, Optional, TypeVar, Generic
 from adtlib.node import LinkedNode
 
 
+T = TypeVar("T")
+
 @dataclass
-class SinglyLinkedList:
+class SinglyLinkedList(Generic[T]):
     """
     Singly linked list ADT.
 
@@ -17,8 +19,8 @@ class SinglyLinkedList:
     :param _size: Number of elements in the list
     :type _size: int
     """
-    _head: Optional[LinkedNode] = field(default=None, repr=False)
-    _tail: Optional[LinkedNode] = field(default=None, repr=False)
+    _head: Optional[LinkedNode[T]] = field(default=None, repr=False)
+    _tail: Optional[LinkedNode[T]] = field(default=None, repr=False)
     _size: int = field(default=0, repr=False)
 
 
@@ -31,7 +33,7 @@ class SinglyLinkedList:
         """
         return self._size
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iterator[T]:
         """
         Iterate over elements from head to tail.
 
@@ -45,19 +47,19 @@ class SinglyLinkedList:
 
 
     @property
-    def head(self) -> LinkedNode:
+    def head(self) -> Optional[LinkedNode[T]]:
         return self._head
 
     @head.setter
-    def head(self, node: LinkedNode) -> None:
+    def head(self, node: Optional[LinkedNode[T]]) -> None:
         self._head = node
 
     @property
-    def tail(self) -> LinkedNode:
+    def tail(self) -> Optional[LinkedNode[T]]:
         return self._tail
 
     @tail.setter
-    def tail(self, node: LinkedNode) -> None:
+    def tail(self, node: Optional[LinkedNode[T]]) -> None:
         self._tail = node
 
     @property
@@ -78,7 +80,7 @@ class SinglyLinkedList:
         """
         return self.size == 0
 
-    def append(self, value: Any) -> None:
+    def append(self, value: T) -> None:
         """
         Add a value to the end of the list.
 
@@ -93,7 +95,7 @@ class SinglyLinkedList:
             self.tail = node
         self.size += 1
 
-    def prepend(self, value: Any) -> None:
+    def prepend(self, value: T) -> None:
         """
         Add a value to the start of the list.
 
@@ -108,7 +110,7 @@ class SinglyLinkedList:
             self.head = node
         self.size += 1
 
-    def pop_front(self) -> Any:
+    def pop_front(self) -> T:
         """
         Remove and return the first element.
 
@@ -125,7 +127,7 @@ class SinglyLinkedList:
         self._size -= 1
         return value
 
-    def pop_back(self) -> Any:
+    def pop_back(self) -> T:
         """
         Remove and return the last element.
 
@@ -147,7 +149,7 @@ class SinglyLinkedList:
         self.size -= 1
         return value
 
-    def find(self, value: Any) -> Optional[LinkedNode]:
+    def find(self, value: T) -> Optional[LinkedNode[T]]:
         """
         Find the first node containing a value.
 
@@ -165,7 +167,7 @@ class SinglyLinkedList:
 
 
 @dataclass
-class DoublyLinkedList:
+class DoublyLinkedList(Generic[T]):
     """
     Doubly linked list ADT.
 
@@ -178,8 +180,8 @@ class DoublyLinkedList:
     :param _size: Number of elements in the list
     :type _size: int
     """
-    _head: Optional[LinkedNode] = field(default=None, repr=False)
-    _tail: Optional[LinkedNode] = field(default=None, repr=False)
+    _head: Optional[LinkedNode[T]] = field(default=None, repr=False)
+    _tail: Optional[LinkedNode[T]] = field(default=None, repr=False)
     _size: int = field(default=0, repr=False)
 
 
@@ -192,7 +194,7 @@ class DoublyLinkedList:
         """
         return self._size
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iterator[T]:
         """
         Iterate over elements from head to tail.
 
@@ -206,210 +208,19 @@ class DoublyLinkedList:
 
 
     @property
-    def head(self) -> Optional[LinkedNode]:
+    def head(self) -> Optional[LinkedNode[T]]:
         return self._head
 
     @head.setter
-    def head(self, node: Optional[LinkedNode]) -> None:
+    def head(self, node: Optional[LinkedNode[T]]) -> None:
         self._head = node
 
     @property
-    def tail(self) -> Optional[LinkedNode]:
+    def tail(self) -> Optional[LinkedNode[T]]:
         return self._tail
 
     @tail.setter
-    def tail(self, node: Optional[LinkedNode]) -> None:
-        self._tail = node
-
-    @property
-    def size(self) -> int:
-        return self._size
-
-    @size.setter
-    def size(self, val: int) -> None:
-        self._size = val
-
-
-    def is_empty(self) -> bool:
-        """
-        Check if the list is empty.
-
-        :return: True if empty, False otherwise
-        :rtype: bool
-        """
-        return self.size == 0
-
-    def append(self, value: Any) -> None:
-        """
-        Add a value to the end of the list.
-
-        :param value: Value to append
-        :type value: Any
-        """
-        node = LinkedNode(value)
-        if not self.head:
-            self.head = self.tail = node
-        else:
-            node.previous = self.tail
-            self.tail.next = node
-            self.tail = node
-        self.size += 1
-
-    def prepend(self, value: Any) -> None:
-        """
-        Add a value to the start of the list.
-
-        :param value: Value to prepend
-        :type value: Any
-        """
-        node = LinkedNode(value)
-        if not self.head:
-            self.head = self.tail = node
-        else:
-            node.next = self.head
-            self.head.previous = node
-            self.head = node
-        self.size += 1
-
-    def pop_front(self) -> Any:
-        """
-        Remove and return the first element.
-
-        :return: Value of the removed node
-        :rtype: Any
-        :raises IndexError: If the list is empty
-        """
-        if self.is_empty():
-            raise IndexError("Pop from empty DoublyLinkedList")
-        value = self.head.value
-        self.head = self.head.next
-        if self.head:
-            self.head.previous = None
-        else:
-            self.tail = None
-        self.size -= 1
-        return value
-
-    def pop_back(self) -> Any:
-        """
-        Remove and return the last element.
-
-        :return: Value of the removed node
-        :rtype: Any
-        :raises IndexError: If the list is empty
-        """
-        if self.is_empty():
-            raise IndexError("Pop from empty DoublyLinkedList")
-        value = self.tail.value
-        self.tail = self.tail.previous
-        if self.tail:
-            self.tail.next = None
-        else:
-            self.head = None
-        self.size -= 1
-        return value
-
-    def find(self, value: Any) -> Optional[LinkedNode]:
-        """
-        Find the first node containing a value.
-
-        :param value: Value to search for
-        :type value: Any
-        :return: Node containing the value, or None if not found
-        :rtype: Optional[LinkedNode]
-        """
-        current = self.head
-        while current:
-            if current.value == value:
-                return current
-            current = current.next
-        return None
-
-    def remove(self, node: LinkedNode) -> None:
-        """
-        Remove a specific node from the list.
-
-        :param node: Node to remove
-        :type node: LinkedNode
-        """
-        if node is self.head:
-            self.pop_front()
-            return
-
-        if node is self.tail:
-            self.pop_back()
-            return
-
-        # Only adjust one side per link
-        node.previous.next = node.next
-
-        # Clear node links
-        node.previous = None
-        node.next = None
-
-        self.size -= 1
-
-
-@dataclass
-class CircularLinkedList:
-    """
-    Singly circular linked list ADT.
-
-    The last node points back to the head, forming a circle.
-    Supports insertion, removal, and traversal.
-
-    :param head: First node in the list, or None if empty
-    :type head: Optional[LinkedNode]
-    :param tail: Last node in the list, or None if empty
-    :type tail: Optional[LinkedNode]
-    :param _size: Number of elements in the list
-    :type _size: int
-    """
-    _head: Optional[LinkedNode] = field(default=None, repr=False)
-    _tail: Optional[LinkedNode] = field(default=None, repr=False)
-    _size: int = field(default=0, repr=False)
-
-
-    def __len__(self) -> int:
-        """
-        Return the number of items in the list.
-
-        :return: Number of elements
-        :rtype: int
-        """
-        return self._size
-
-    def __iter__(self) -> Iterator[Any]:
-        """
-        Iterate over elements from head to tail.
-
-        Stops after one full cycle (does not loop infinitely).
-
-        :return: Iterator of node values
-        :rtype: Iterator[Any]
-        """
-        current = self.head
-        count = 0
-        while current and count < self._size:
-            yield current.value
-            current = current.next
-            count += 1
-
-
-    @property
-    def head(self) -> Optional[LinkedNode]:
-        return self._head
-
-    @head.setter
-    def head(self, node: Optional[LinkedNode]) -> None:
-        self._head = node
-
-    @property
-    def tail(self) -> Optional[LinkedNode]:
-        return self._tail
-
-    @tail.setter
-    def tail(self, node: Optional[LinkedNode]) -> None:
+    def tail(self, node: Optional[LinkedNode[T]]) -> None:
         self._tail = node
 
     @property
@@ -430,7 +241,197 @@ class CircularLinkedList:
         """
         return self._size == 0
 
-    def append(self, value: Any) -> None:
+    def append(self, value: T) -> None:
+        """
+        Add a value to the end of the list.
+
+        :param value: Value to append
+        :type value: Any
+        """
+        node = LinkedNode(value)
+        if not self.head:
+            self.head = self.tail = node
+        else:
+            node.previous = self.tail
+            self.tail.next = node
+            self.tail = node
+        self._size += 1
+
+    def prepend(self, value: T) -> None:
+        """
+        Add a value to the start of the list.
+
+        :param value: Value to prepend
+        :type value: Any
+        """
+        node = LinkedNode(value)
+        if not self.head:
+            self.head = self.tail = node
+        else:
+            node.next = self.head
+            self.head.previous = node
+            self.head = node
+        self._size += 1
+
+    def pop_front(self) -> T:
+        """
+        Remove and return the first element.
+
+        :return: Value of the removed node
+        :rtype: Any
+        :raises IndexError: If the list is empty
+        """
+        if self.is_empty():
+            raise IndexError("Pop from empty DoublyLinkedList")
+        value = self.head.value
+        self.head = self.head.next
+        if self.head:
+            self.head.previous = None
+        else:
+            self.tail = None
+        self._size -= 1
+        return value
+
+    def pop_back(self) -> T:
+        """
+        Remove and return the last element.
+
+        :return: Value of the removed node
+        :rtype: Any
+        :raises IndexError: If the list is empty
+        """
+        if self.is_empty():
+            raise IndexError("Pop from empty DoublyLinkedList")
+        value = self.tail.value
+        self.tail = self.tail.previous
+        if self.tail:
+            self.tail.next = None
+        else:
+            self.head = None
+        self._size -= 1
+        return value
+
+    def find(self, value: T) -> Optional[LinkedNode[T]]:
+        """
+        Find the first node containing a value.
+
+        :param value: Value to search for
+        :type value: Any
+        :return: Node containing the value, or None if not found
+        :rtype: Optional[LinkedNode]
+        """
+        current = self.head
+        while current:
+            if current.value == value:
+                return current
+            current = current.next
+        return None
+
+    def remove(self, node: LinkedNode[T]) -> None:
+        """
+        Remove a specific node from the list.
+
+        :param node: Node to remove
+        :type node: LinkedNode
+        """
+        if node is self.head:
+            self.pop_front()
+            return
+        if node is self.tail:
+            self.pop_back()
+            return
+        prev_node = node.previous
+        next_node = node.next
+        if prev_node:
+            prev_node.next = next_node
+        if next_node:
+            next_node.previous = prev_node
+        node.previous = None
+        node.next = None
+        self._size -= 1
+
+
+@dataclass
+class CircularLinkedList(Generic[T]):
+    """
+    Singly circular linked list ADT.
+
+    The last node points back to the head, forming a circle.
+    Supports insertion, removal, and traversal.
+
+    :param head: First node in the list, or None if empty
+    :type head: Optional[LinkedNode]
+    :param tail: Last node in the list, or None if empty
+    :type tail: Optional[LinkedNode]
+    :param _size: Number of elements in the list
+    :type _size: int
+    """
+    _head: Optional[LinkedNode[T]] = field(default=None, repr=False)
+    _tail: Optional[LinkedNode[T]] = field(default=None, repr=False)
+    _size: int = field(default=0, repr=False)
+
+
+    def __len__(self) -> int:
+        """
+        Return the number of items in the list.
+
+        :return: Number of elements
+        :rtype: int
+        """
+        return self._size
+
+    def __iter__(self) -> Iterator[T]:
+        """
+        Iterate over elements from head to tail.
+
+        Stops after one full cycle (does not loop infinitely).
+
+        :return: Iterator of node values
+        :rtype: Iterator[Any]
+        """
+        current = self.head
+        count = 0
+        while current and count < self._size:
+            yield current.value
+            current = current.next
+            count += 1
+
+
+    @property
+    def head(self) -> Optional[LinkedNode[T]]:
+        return self._head
+
+    @head.setter
+    def head(self, node: Optional[LinkedNode[T]]) -> None:
+        self._head = node
+
+    @property
+    def tail(self) -> Optional[LinkedNode[T]]:
+        return self._tail
+
+    @tail.setter
+    def tail(self, node: Optional[LinkedNode[T]]) -> None:
+        self._tail = node
+
+    @property
+    def size(self) -> int:
+        return self._size
+
+    @size.setter
+    def size(self, val: int) -> None:
+        self._size = val
+
+
+    def is_empty(self) -> bool:
+        """
+        Check if the list is empty.
+
+        :return: True if empty, False otherwise
+        :rtype: bool
+        """
+        return self._size == 0
+
+    def append(self, value: T) -> None:
         """
         Add a value to the end of the list.
 
@@ -447,7 +448,7 @@ class CircularLinkedList:
             self.tail = node
         self._size += 1
 
-    def prepend(self, value: Any) -> None:
+    def prepend(self, value: T) -> None:
         """
         Add a value to the start of the list.
 
@@ -464,7 +465,7 @@ class CircularLinkedList:
             self.head = node
         self._size += 1
 
-    def pop_front(self) -> Any:
+    def pop_front(self) -> T:
         """
         Remove and return the first element.
 
@@ -483,7 +484,7 @@ class CircularLinkedList:
         self._size -= 1
         return value
 
-    def pop_back(self) -> Any:
+    def pop_back(self) -> T:
         """
         Remove and return the last element.
 
@@ -505,7 +506,7 @@ class CircularLinkedList:
         self._size -= 1
         return value
 
-    def find(self, value: Any) -> Optional[LinkedNode]:
+    def find(self, value: T) -> Optional[LinkedNode[T]]:
         """
         Find the first node containing a value.
 

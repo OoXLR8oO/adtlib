@@ -1,10 +1,11 @@
 from dataclasses import dataclass, field
-from typing import Optional, List, Any
+from typing import Optional, List, Any, TypeVar, Generic
 from abc import ABC, abstractmethod
 
+T = TypeVar("T")
 
 @dataclass
-class BaseNode(ABC):
+class BaseNode(ABC, Generic[T]):
     """
     Abstract base class for all node types.
 
@@ -13,13 +14,13 @@ class BaseNode(ABC):
     :param _neighbours: Get the list of neighbours connected to this node.
     :type _value: Any
     """
-    _value: Any = None
-    _neighbours: Optional[List[BaseNode]] = field(default=None, repr=False)
+    _value: Optional[T] = None
+    _neighbours: Optional[List[BaseNode[T]]] = field(default=None, repr=False)
 
 
     @property
     @abstractmethod
-    def value(self) -> Any:
+    def value(self) -> Optional[T]:
         """
         Get the value stored in this node.
 
@@ -30,7 +31,7 @@ class BaseNode(ABC):
 
     @value.setter
     @abstractmethod
-    def value(self, val) -> None:
+    def value(self, val: T) -> None:
         """
         Set the value of this node.
 
@@ -41,7 +42,7 @@ class BaseNode(ABC):
 
     @property
     @abstractmethod
-    def neighbours(self) -> List[BaseNode]:
+    def neighbours(self) -> List[BaseNode[T]]:
         """
         Return a list of nodes connected to this node.
         For graphs, this is neighbours.
@@ -51,7 +52,7 @@ class BaseNode(ABC):
 
 
 @dataclass
-class GraphNode(BaseNode):
+class GraphNode(BaseNode[T]):
     """
     Node used for graph or tree structures.
 
@@ -60,22 +61,22 @@ class GraphNode(BaseNode):
     :param _neighbours: List of connected nodes (edges), or None if no neighbours
     :type _neighbours: Optional[List[GraphNode]]
     """
-    _neighbours: Optional[List[GraphNode]] = field(default=None, repr=False)
+    _neighbours: Optional[List[GraphNode[T]]] = field(default=None, repr=False)
     
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         neigh_vals = [n.value for n in self._neighbours] if self._neighbours else []
         return f"GraphNode(value={self.value}, neighbours={neigh_vals})"
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return id(self)
 
-    def __eq__(self, node: GraphNode):
+    def __eq__(self, node: GraphNode) -> bool:
         return id(self) == id(node)
 
 
     @property
-    def value(self) -> int | float | None:
+    def value(self) -> T:
         """
         Get the value stored in this graph node.
 
@@ -85,7 +86,7 @@ class GraphNode(BaseNode):
         return self._value
 
     @value.setter
-    def value(self, val) -> None:
+    def value(self, val: T) -> None:
         """
         Set the value stored in this graph node.
 
@@ -95,7 +96,7 @@ class GraphNode(BaseNode):
         self._value = val
 
     @property
-    def neighbours(self) -> List[GraphNode]:
+    def neighbours(self) -> List[GraphNode[T]]:
         """
         Get the list of neighbours connected to this node.
         This returns a shallow copy with `.copy()`. External
@@ -110,7 +111,7 @@ class GraphNode(BaseNode):
         return self._neighbours.copy()
 
     @neighbours.setter
-    def neighbours(self, val: Optional[List[GraphNode]]) -> None:
+    def neighbours(self, val: Optional[List[GraphNode[T]]]) -> None:
         """
         Set the neighbours list.
 
@@ -120,7 +121,7 @@ class GraphNode(BaseNode):
         self._neighbours = val
 
 
-    def add_neighbour(self, node: GraphNode) -> None:
+    def add_neighbour(self, node: GraphNode[T]) -> None:
         """
         Add a directed edge from this node to another node.
 
@@ -137,7 +138,7 @@ class GraphNode(BaseNode):
         if node not in self._neighbours:
             self._neighbours.append(node)
 
-    def remove_neighbour(self, node: GraphNode) -> None:
+    def remove_neighbour(self, node: GraphNode[T]) -> None:
         """
         Remove a neighbour node from this node.
 
@@ -156,7 +157,7 @@ class GraphNode(BaseNode):
         """
         self._neighbours = []
 
-    def has_neighbour(self, node: GraphNode) -> bool:
+    def has_neighbour(self, node: GraphNode[T]) -> bool:
         """Check if a given node is a neighbour."""
         return node in self._neighbours if self._neighbours else False
 
@@ -171,7 +172,7 @@ class GraphNode(BaseNode):
 
 
 @dataclass
-class LinkedNode(BaseNode):
+class LinkedNode(BaseNode[T]):
     """
     Node used for linked list structures.
 
@@ -182,18 +183,18 @@ class LinkedNode(BaseNode):
     :param _next: Next linked node or None
     :type _next: Optional[LinkedNode]
     """
-    _previous: Optional[LinkedNode] = field(default=None, repr=False)
-    _next: Optional[LinkedNode] = field(default=None, repr=False)
+    _previous: Optional[LinkedNode[T]] = field(default=None, repr=False)
+    _next: Optional[LinkedNode[T]] = field(default=None, repr=False)
 
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         prev_val = self.previous.value if self.previous else None
         next_val = self.next.value if self.next else None
         return f"LinkedNode(value={self.value}, prev={prev_val}, next={next_val})"
 
 
     @property
-    def value(self) -> Any:
+    def value(self) -> T:
         """
         Get the value stored in this linked node.
 
@@ -203,7 +204,7 @@ class LinkedNode(BaseNode):
         return self._value
 
     @value.setter
-    def value(self, val) -> None:
+    def value(self, val: T) -> None:
         """
         Set the value stored in this linked node.
 
@@ -213,7 +214,7 @@ class LinkedNode(BaseNode):
         self._value = val
 
     @property
-    def previous(self) -> Optional[LinkedNode]:
+    def previous(self) -> Optional[LinkedNode[T]]:
         """
         Get the previous linked node.
 
@@ -223,7 +224,7 @@ class LinkedNode(BaseNode):
         return self._previous
 
     @previous.setter
-    def previous(self, node: Optional[LinkedNode]) -> None:
+    def previous(self, node: Optional[LinkedNode[T]]) -> None:
         """
         Set the previous node in the linked list.
 
@@ -243,7 +244,7 @@ class LinkedNode(BaseNode):
             node._next = self
 
     @property
-    def next(self) -> Optional[LinkedNode]:
+    def next(self) -> Optional[LinkedNode[T]]:
         """
         Get the next linked node.
 
@@ -253,7 +254,7 @@ class LinkedNode(BaseNode):
         return self._next
 
     @next.setter
-    def next(self, node: Optional[LinkedNode]) -> None:
+    def next(self, node: Optional[LinkedNode[T]]) -> None:
         """
         Set the next node in the linked list.
 
@@ -273,11 +274,11 @@ class LinkedNode(BaseNode):
             node._previous = self
 
     @property
-    def neighbours(self) -> List[BaseNode]:
+    def neighbours(self) -> List[BaseNode[T]]:
         return [n for n in (self.next,) if n is not None]  # linear chain
             
 
-    def add_previous(self, node: LinkedNode) -> None:
+    def add_previous(self, node: LinkedNode[T]) -> None:
         """
         Attach a node before this one.
 
@@ -286,7 +287,7 @@ class LinkedNode(BaseNode):
         """
         self.previous = node
 
-    def add_next(self, node: LinkedNode) -> None:
+    def add_next(self, node: LinkedNode[T]) -> None:
         """
         Attach a node after this one.
 
@@ -305,7 +306,7 @@ class LinkedNode(BaseNode):
 
 
 @dataclass
-class TreeNode(BaseNode):
+class TreeNode(BaseNode[T]):
     """
     Node used for binary tree structures.
 
@@ -318,19 +319,19 @@ class TreeNode(BaseNode):
     :param _parent: Parent node or None
     :type _parent: Optional[TreeNode]
     """
-    _left: Optional[TreeNode] = field(default=None, repr=False)
-    _right: Optional[TreeNode] = field(default=None, repr=False)
-    _parent: Optional[TreeNode] = field(default=None, repr=False)
+    _left: Optional[TreeNode[T]] = field(default=None, repr=False)
+    _right: Optional[TreeNode[T]] = field(default=None, repr=False)
+    _parent: Optional[TreeNode[T]] = field(default=None, repr=False)
 
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         left_val = self.left.value if self.left else None
         right_val = self.right.value if self.right else None
         return f"TreeNode(value={self.value}, left={left_val}, right={right_val})"
 
 
     @property
-    def value(self) -> Any:
+    def value(self) -> T:
         """
         Get the value stored in this tree node.
 
@@ -340,7 +341,7 @@ class TreeNode(BaseNode):
         return self._value
 
     @value.setter
-    def value(self, val) -> None:
+    def value(self, val: T) -> None:
         """
         Set the value stored in this tree node.
 
@@ -350,7 +351,7 @@ class TreeNode(BaseNode):
         self._value = val
 
     @property
-    def left(self) -> Optional[TreeNode]:
+    def left(self) -> Optional[TreeNode[T]]:
         """
         Get the left child node.
 
@@ -360,7 +361,7 @@ class TreeNode(BaseNode):
         return self._left
 
     @left.setter
-    def left(self, node: Optional[TreeNode]) -> None:
+    def left(self, node: Optional[TreeNode[T]]) -> None:
         """
         Set the left child node.
 
@@ -380,7 +381,7 @@ class TreeNode(BaseNode):
             node._parent = self
 
     @property
-    def right(self) -> Optional[TreeNode]:
+    def right(self) -> Optional[TreeNode[T]]:
         """
         Get the right child node.
 
@@ -390,7 +391,7 @@ class TreeNode(BaseNode):
         return self._right
 
     @right.setter
-    def right(self, node: Optional[TreeNode]) -> None:
+    def right(self, node: Optional[TreeNode[T]]) -> None:
         """
         Set the right child node.
 
@@ -420,7 +421,7 @@ class TreeNode(BaseNode):
         return self._parent
 
     @property
-    def neighbours(self) -> List[BaseNode]:
+    def neighbours(self) -> List[BaseNode[T]]:
         return [child for child in (self.left, self.right) if child is not None]
 
 
