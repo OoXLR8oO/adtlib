@@ -52,7 +52,7 @@ class BaseNode(ABC, Generic[T]):
         ...
 
 
-@dataclass
+@dataclass(eq=False)
 class GraphNode(BaseNode[T]):
     """
     Node used for graph or tree structures.
@@ -72,8 +72,10 @@ class GraphNode(BaseNode[T]):
     def __hash__(self) -> int:
         return id(self)
 
-    def __eq__(self, node: GraphNode) -> bool:
-        return id(self) == id(node)
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, GraphNode):
+            return NotImplemented
+        return id(self) == id(other)
 
 
     @property

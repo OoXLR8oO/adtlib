@@ -1,8 +1,6 @@
 from dataclasses import dataclass, field
-from typing import Any, List, Set, Dict, TypeVar, Generic
+from typing import List, Dict, TypeVar, Generic
 from adtlib.node import GraphNode
-from adtlib.queue import Queue
-from adtlib.stack import Stack
 
 
 T = TypeVar("T")
@@ -13,15 +11,20 @@ class Graph(Generic[T]):
     Graph ADT using GraphNode instances.
 
     Supports directed and undirected graphs, with methods for
-    adding/removing nodes and edges, as well as BFS and DFS traversal.
+    adding/removing nodes and edges, BFS and DFS traversal, and weighted edges.
 
     :param _nodes: List of all nodes in the graph
     :type _nodes: List[GraphNode]
+    :param _node_map: Dictionary mapping node values to GraphNode instances
+    :type _node_map: Dict[T, GraphNode[T]]
+    :param _weights: Dictionary storing edge weights as (source, target) -> weight
+    :type _weights: Dict[tuple[GraphNode[T], GraphNode[T]], float]
     :param _directed: Whether the graph is directed
     :type _directed: bool
     """
     _nodes: List[GraphNode[T]] = field(default_factory=list, repr=False)
     _node_map: Dict[T, GraphNode[T]] = field(default_factory=dict, repr=False)
+    _weights: Dict[tuple[GraphNode[T], GraphNode[T]], float] = field(default_factory=dict, repr=False)
     _directed: bool = False
 
     @property
@@ -44,6 +47,16 @@ class Graph(Generic[T]):
         """
         self._nodes = value
         self._node_map = {node.value: node for node in value}
+
+    @property
+    def weights(self) -> Dict[tuple[GraphNode[T], GraphNode[T]], float]:
+        """
+        Get a read-only view of the graph's edge weights.
+
+        :return: Dictionary mapping (node1, node2) tuples to edge weights
+        :rtype: Dict[tuple[GraphNode, GraphNode], float]
+        """
+        return self._weights.copy()
 
     @property
     def directed(self) -> bool:
@@ -94,77 +107,80 @@ class Graph(Generic[T]):
         if node.value in self._node_map:
             del self._node_map[node.value]
 
-    def add_edge(self, node1: GraphNode[T], node2: GraphNode[T]) -> None:
+    def add_edge(self, node1: GraphNode[T], node2: GraphNode[T], weight: float | None = None) -> None:
         """
-        Add an edge between two nodes.
+        Add an edge between two nodes. Optionally assign a weight to the edge.
 
         :param node1: Source node
         :type node1: GraphNode
         :param node2: Target node
         :type node2: GraphNode
+        :param weight: Optional weight for the edge
+        :type weight: float | None
+        :raises ValueError: If either node is not in the graph
         """
+        if node1 not in self.nodes or node2 not in self.nodes:
+            raise ValueError("Both nodes must be part of the graph")
+
         node1.add_neighbour(node2)
         if not self.directed:
             node2.add_neighbour(node1)
 
+        if weight is not None:
+            self.set_edge_weight(node1, node2, weight)
+
     def remove_edge(self, node1: GraphNode[T], node2: GraphNode[T]) -> None:
         """
-        Remove the edge between two nodes.
+        Remove the edge between two nodes and clear any associated weight.
 
         :param node1: Source node
         :type node1: GraphNode
         :param node2: Target node
         :type node2: GraphNode
+        :raises ValueError: If either node is not in the graph
         """
+        if node1 not in self.nodes or node2 not in self.nodes:
+            raise ValueError("Both nodes must be part of the graph")
+
         node1.remove_neighbour(node2)
+        self._weights.pop((node1, node2), None)
+
         if not self.directed:
             node2.remove_neighbour(node1)
+            self._weights.pop((node2, node1), None)
 
-    def bfs(self, start: GraphNode[T]) -> List[T]:
+    def set_edge_weight(self, node1: GraphNode[T], node2: GraphNode[T], weight: float) -> None:
         """
-        Perform breadth-first search starting from a node.
+        Set the weight of an edge between two nodes. Automatically adds the edge if it doesn't exist.
 
-        :param start: Starting node
-        :type start: GraphNode
-        :return: List of node values in BFS order
-        :rtype: List[GraphNode]
+        :param node1: Source node
+        :type node1: GraphNode
+        :param node2: Target node
+        :type node2: GraphNode
+        :param weight: Weight to assign to the edge
+        :type weight: float
+        :raises ValueError: If either node is not in the graph
         """
-        queue = Queue[GraphNode[T]]()
-        queue.enqueue(start)
-        visited: Set[GraphNode[T]] = set()
-        order: List[T] = []
-        while not queue.is_empty():
-            node = queue.dequeue()
-            if node in visited:
-                continue
-            visited.add(node)
-            order.append(node.value)
-            for nbr in node.neighbours:
-                if nbr not in visited:
-                    queue.enqueue(nbr)
-        return order
+        if node1 not in self.nodes or node2 not in self.nodes:
+            raise ValueError("Both nodes must be part of the graph")
 
-    def dfs(self, start: GraphNode[T]) -> List[T]:
+        self._weights[(node1, node2)] = weight
+        if not self.directed:
+            self._weights[(node2, node1)] = weight
+
+    def get_edge_weight(self, node1: GraphNode[T], node2: GraphNode[T]) -> float | None:
         """
-        Perform depth-first search starting from a node.
+        Retrieve the weight of an edge between two nodes.
 
-        :param start: Starting node
-        :type start: GraphNode
-        :return: List of node values in DFS order
-        :rtype: List[GraphNode]
+        :param node1: Source node
+        :type node1: GraphNode
+        :param node2: Target node
+        :type node2: GraphNode
+        :return: Weight of the edge if it exists, else None
+        :rtype: float | None
+        :raises ValueError: If either node is not in the graph
         """
-        visited: Set[GraphNode[T]] = set()
-        stack = Stack[GraphNode[T]]()
-        stack.push(start)
-        order: List[T] = []
-
-        while not stack.is_empty():
-            node = stack.pop()
-            if node in visited:
-                continue
-            visited.add(node)
-            order.append(node.value)
-            for nbr in reversed(node.neighbours):
-                if nbr not in visited:
-                    stack.push(nbr)
-        return order
+        if node1 not in self.nodes or node2 not in self.nodes:
+            raise ValueError("Both nodes must be part of the graph")
+        
+        return self._weights.get((node1, node2))
