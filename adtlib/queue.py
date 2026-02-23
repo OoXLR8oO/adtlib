@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import Iterator, Iterable, Tuple, TypeVar, Generic
 from collections import deque
 import heapq
+from itertools import count
 
 
 T = TypeVar("T")
@@ -263,11 +264,11 @@ class PriorityQueue(Generic[T]):
 
     Items are retrieved in order of priority (lowest number = highest priority).
 
-    :param _data: Internal storage as a min-heap of tuples (priority, item)
-    :type _data: list[Tuple[int, Any]]
+    :param _data: Internal storage as a min-heap of tuples (priority, counter, item)
+    :type _data: list[Tuple[int, int, Any]]
     """
-    _data: list[Tuple[int, T]] = field(default_factory=list, repr=False)
-
+    _data: list[Tuple[int, int, T]] = field(default_factory=list, repr=False)
+    _counter: count = field(default_factory=count, init=False, repr=False)
 
     def __len__(self) -> int:
         """
@@ -285,7 +286,7 @@ class PriorityQueue(Generic[T]):
         :return: Iterator yielding items in heap order
         :rtype: Iterator[Any]
         """
-        return (item for _, item in self._data)
+        return (item for _, _, item in self._data)
 
     def __repr__(self) -> str:
         """
@@ -296,7 +297,6 @@ class PriorityQueue(Generic[T]):
         """
         return f"PriorityQueue({self._data!r})"
 
-
     def push(self, item: T, priority: int) -> None:
         """
         Add an item with a given priority.
@@ -306,7 +306,7 @@ class PriorityQueue(Generic[T]):
         :param priority: Priority of the item (lower = higher priority)
         :type priority: int
         """
-        heapq.heappush(self._data, (priority, item))
+        heapq.heappush(self._data, (priority, next(self._counter), item))
 
     def pop(self) -> T:
         """
@@ -318,7 +318,7 @@ class PriorityQueue(Generic[T]):
         """
         if self.is_empty():
             raise IndexError("Cannot pop from empty PriorityQueue")
-        return heapq.heappop(self._data)[1]
+        return heapq.heappop(self._data)[2]
 
     def peek(self) -> T:
         """
@@ -330,7 +330,7 @@ class PriorityQueue(Generic[T]):
         """
         if self.is_empty():
             raise IndexError("Cannot peek from empty PriorityQueue")
-        return self._data[0][1]
+        return self._data[0][2]
 
     def is_empty(self) -> bool:
         """

@@ -107,7 +107,7 @@ class Graph(Generic[T]):
         if node.value in self._node_map:
             del self._node_map[node.value]
 
-    def add_edge(self, node1: GraphNode[T], node2: GraphNode[T], weight: float | None = None) -> None:
+    def add_edge(self, node1: GraphNode[T], node2: GraphNode[T], weight: float = 1) -> None:
         """
         Add an edge between two nodes. Optionally assign a weight to the edge.
 
