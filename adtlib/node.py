@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Optional, List, Any, TypeVar, Generic
+from typing import Optional, List, TypeVar, Generic
 from abc import ABC, abstractmethod
+
 
 T = TypeVar("T")
 

@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Iterator, Optional, TypeVar, Generic
+from typing import Iterator, Optional, TypeVar, Generic
 from adtlib.node import LinkedNode
 
 

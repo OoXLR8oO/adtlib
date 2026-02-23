@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
-from typing import Any, Iterator, Iterable, Tuple, TypeVar, Generic
+from typing import Iterator, Iterable, Tuple, TypeVar, Generic
 from collections import deque
 import heapq
+
 
 T = TypeVar("T")
 
@@ -16,7 +17,7 @@ class Queue(Generic[T]):
     :type _data: deque[Any]
     """
     _data: deque[T] = field(default_factory=deque, repr=False)
-    
+
 
     def __len__(self) -> int:
         """

@@ -1,13 +1,14 @@
 from dataclasses import dataclass, field
-from adtlib.queue import Queue
-from typing import Any, List, Set, Dict
+from typing import Any, List, Set, Dict, TypeVar, Generic
 from adtlib.node import GraphNode
-from collections import deque
-
+from adtlib.queue import Queue
 from adtlib.stack import Stack
 
+
+T = TypeVar("T")
+
 @dataclass
-class Graph:
+class Graph(Generic[T]):
     """
     Graph ADT using GraphNode instances.
 
@@ -19,12 +20,12 @@ class Graph:
     :param _directed: Whether the graph is directed
     :type _directed: bool
     """
-    _nodes: List[GraphNode] = field(default_factory=list, repr=False)
-    _node_map: Dict[Any, GraphNode] = field(default_factory=dict, repr=False)
+    _nodes: List[GraphNode[T]] = field(default_factory=list, repr=False)
+    _node_map: Dict[T, GraphNode[T]] = field(default_factory=dict, repr=False)
     _directed: bool = False
 
     @property
-    def nodes(self) -> List[GraphNode]:
+    def nodes(self) -> List[GraphNode[T]]:
         """
         Get the list of all nodes in the graph.
 
@@ -34,7 +35,7 @@ class Graph:
         return self._nodes
 
     @nodes.setter
-    def nodes(self, value: List[GraphNode]) -> None:
+    def nodes(self, value: List[GraphNode[T]]) -> None:
         """
         Set the list of nodes in the graph.
 
@@ -64,7 +65,7 @@ class Graph:
         """
         self._directed = value
 
-    def add_node(self, node: GraphNode) -> None:
+    def add_node(self, node: GraphNode[T]) -> None:
         """
         Add a new GraphNode to the graph.
 
@@ -76,10 +77,10 @@ class Graph:
         self._nodes.append(node)
         self._node_map[node.value] = node
 
-    def get_node(self, value: Any) -> GraphNode | None:
+    def get_node(self, value: T) -> GraphNode[T] | None:
         return self._node_map.get(value)
 
-    def remove_node(self, node: GraphNode) -> None:
+    def remove_node(self, node: GraphNode[T]) -> None:
         """
         Remove a node and all edges to/from it.
 
@@ -93,7 +94,7 @@ class Graph:
         if node.value in self._node_map:
             del self._node_map[node.value]
 
-    def add_edge(self, node1: GraphNode, node2: GraphNode) -> None:
+    def add_edge(self, node1: GraphNode[T], node2: GraphNode[T]) -> None:
         """
         Add an edge between two nodes.
 
@@ -106,7 +107,7 @@ class Graph:
         if not self.directed:
             node2.add_neighbour(node1)
 
-    def remove_edge(self, node1: GraphNode, node2: GraphNode) -> None:
+    def remove_edge(self, node1: GraphNode[T], node2: GraphNode[T]) -> None:
         """
         Remove the edge between two nodes.
 
@@ -119,7 +120,7 @@ class Graph:
         if not self.directed:
             node2.remove_neighbour(node1)
 
-    def bfs(self, start: GraphNode) -> List[GraphNode]:
+    def bfs(self, start: GraphNode[T]) -> List[T]:
         """
         Perform breadth-first search starting from a node.
 
@@ -128,10 +129,10 @@ class Graph:
         :return: List of node values in BFS order
         :rtype: List[GraphNode]
         """
-        queue = Queue()
+        queue = Queue[GraphNode[T]]()
         queue.enqueue(start)
-        visited: Set[GraphNode] = set()
-        order: List[Any] = []
+        visited: Set[GraphNode[T]] = set()
+        order: List[T] = []
         while not queue.is_empty():
             node = queue.dequeue()
             if node in visited:
@@ -143,7 +144,7 @@ class Graph:
                     queue.enqueue(nbr)
         return order
 
-    def dfs(self, start: GraphNode) -> List[GraphNode]:
+    def dfs(self, start: GraphNode[T]) -> List[T]:
         """
         Perform depth-first search starting from a node.
 
@@ -152,10 +153,10 @@ class Graph:
         :return: List of node values in DFS order
         :rtype: List[GraphNode]
         """
-        visited: Set[GraphNode] = set()
-        stack = Stack()
+        visited: Set[GraphNode[T]] = set()
+        stack = Stack[GraphNode[T]]()
         stack.push(start)
-        order = []
+        order: List[T] = []
 
         while not stack.is_empty():
             node = stack.pop()
