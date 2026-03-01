@@ -67,6 +67,7 @@ class GraphNode(BaseNode[T]):
 
     def __repr__(self) -> str:
         neigh_vals = [n.value for n in self._neighbours] if self._neighbours else []
+        # return f"GraphNode(v={self.value}, n={neigh_vals})"
         return f"GraphNode(value={self.value}, neighbours={neigh_vals})"
 
     def __hash__(self) -> int:
@@ -278,7 +279,7 @@ class LinkedNode(BaseNode[T]):
 
     @property
     def neighbours(self) -> List[BaseNode[T]]:
-        return [n for n in (self.next,) if n is not None]  # linear chain
+        return [n for n in (self.next,) if n is not None]
             
 
     def add_previous(self, node: LinkedNode[T]) -> None:
