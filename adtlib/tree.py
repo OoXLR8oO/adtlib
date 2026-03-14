@@ -1,23 +1,21 @@
 from dataclasses import dataclass, field
-from typing import Optional, Generator, TypeVar, Generic
+from collections.abc import Generator
 from adtlib.node import TreeNode
 
 
-T = TypeVar("T")
-
 @dataclass
-class BinaryTree(Generic[T]):
+class BinaryTree[T]:
     """
     Binary tree data structure.
 
     :param root: Root node of the tree or None
     :type root: Optional[TreeNode]
     """
-    _root: Optional[TreeNode[T]] = field(default=None, repr=False)
+    _root: TreeNode[T] | None = field(default=None, repr=False)
 
 
     @property
-    def root(self) -> Optional[TreeNode[T]]:
+    def root(self) -> TreeNode[T] | None:
         """
         Get the root node of the tree.
 
@@ -27,7 +25,7 @@ class BinaryTree(Generic[T]):
         return self._root
 
     @root.setter
-    def root(self, node: Optional[TreeNode[T]]) -> None:
+    def root(self, node: TreeNode[T] | None) -> None:
         """
         Set the root node of the tree.
 
@@ -52,7 +50,7 @@ class BinaryTree(Generic[T]):
         """
         self._root = None
 
-    def height(self, node: Optional[TreeNode[T]] = None) -> int:
+    def height(self, node: TreeNode[T] | None = None) -> int:
         """
         Compute the height of the tree or subtree.
 
@@ -81,7 +79,7 @@ class BinaryTree(Generic[T]):
         """
         return sum(1 for _ in self.preorder())
 
-    def preorder(self, node: Optional[TreeNode[T]] = None) -> Generator[TreeNode[T], None, None]:
+    def preorder(self, node: TreeNode[T] | None = None) -> Generator[TreeNode[T], None, None]:
         """
         Traverse the tree in preorder.
 
@@ -104,7 +102,7 @@ class BinaryTree(Generic[T]):
         if node.right is not None:
             yield from self.preorder(node.right)
 
-    def inorder(self, node: Optional[TreeNode[T]] = None) -> Generator[TreeNode[T], None, None]:
+    def inorder(self, node: TreeNode[T] | None = None) -> Generator[TreeNode[T], None, None]:
         """
         Traverse the tree in inorder.
 
@@ -127,7 +125,7 @@ class BinaryTree(Generic[T]):
         if node.right is not None:
             yield from self.inorder(node.right)
 
-    def postorder(self, node: Optional[TreeNode[T]] = None) -> Generator[TreeNode[T], None, None]:
+    def postorder(self, node: TreeNode[T] | None = None) -> Generator[TreeNode[T], None, None]:
         """
         Traverse the tree in postorder.
 
@@ -174,18 +172,18 @@ class BinaryTree(Generic[T]):
 
 
 @dataclass
-class BinarySearchTree(Generic[T]):
+class BinarySearchTree[T]:
     """
     Binary Search Tree (BST) implementation.
 
     :param root: Root node of the BST, or None
     :type root: Optional[TreeNode]
     """
-    _root: Optional[TreeNode[T]] = field(default=None, repr=False)
+    _root: TreeNode[T] | None = field(default=None, repr=False)
 
 
     @property
-    def root(self) -> Optional[TreeNode[T]]:
+    def root(self) -> TreeNode[T] | None:
         """
         Get the root node of the BST.
 
@@ -195,7 +193,7 @@ class BinarySearchTree(Generic[T]):
         return self._root
 
     @root.setter
-    def root(self, node: Optional[TreeNode[T]]) -> None:
+    def root(self, node: TreeNode[T] | None) -> None:
         """
         Set the root node of the BST.
 
@@ -221,7 +219,7 @@ class BinarySearchTree(Generic[T]):
         :param value: Value to insert
         :type value: int | float
         """
-        def _insert(node: Optional[TreeNode[T]], val: T) -> TreeNode[T]:
+        def _insert(node: TreeNode[T] | None, val: T) -> TreeNode[T]:
             if node is None:
                 return TreeNode(val)
             if val < node.value:
@@ -233,7 +231,7 @@ class BinarySearchTree(Generic[T]):
 
         self._root = _insert(self._root, value)
 
-    def search(self, value: T) -> Optional[TreeNode[T]]:
+    def search(self, value: T) -> TreeNode[T] | None:
         """
         Search for a value in the BST.
 
@@ -249,7 +247,7 @@ class BinarySearchTree(Generic[T]):
             node = node.left if value < node.value else node.right
         return None
 
-    def inorder(self, node: Optional[TreeNode[T]] = None) -> Generator[TreeNode[T], None, None]:
+    def inorder(self, node: TreeNode[T] | None = None) -> Generator[TreeNode[T], None, None]:
         """
         Inorder traversal (left → node → right).
 
@@ -264,7 +262,7 @@ class BinarySearchTree(Generic[T]):
             yield node
             yield from self.inorder(node.right)
 
-    def preorder(self, node: Optional[TreeNode[T]] = None) -> Generator[TreeNode[T], None, None]:
+    def preorder(self, node: TreeNode[T] | None = None) -> Generator[TreeNode[T], None, None]:
         """
         Preorder traversal (node → left → right).
 
@@ -279,7 +277,7 @@ class BinarySearchTree(Generic[T]):
             yield from self.preorder(node.left)
             yield from self.preorder(node.right)
 
-    def postorder(self, node: Optional[TreeNode[T]] = None) -> Generator[TreeNode[T], None, None]:
+    def postorder(self, node: TreeNode[T] | None = None) -> Generator[TreeNode[T], None, None]:
         """
         Postorder traversal (left → right → node).
 
@@ -294,7 +292,7 @@ class BinarySearchTree(Generic[T]):
             yield from self.postorder(node.right)
             yield node
 
-    def min_node(self, node: Optional[TreeNode[T]] = None) -> Optional[TreeNode[T]]:
+    def min_node(self, node: TreeNode[T] | None = None) -> TreeNode[T] | None:
         """
         Find the node with the minimum value.
 
@@ -310,7 +308,7 @@ class BinarySearchTree(Generic[T]):
             node = node.left
         return node
 
-    def max_node(self, node: Optional[TreeNode[T]] = None) -> Optional[TreeNode[T]]:
+    def max_node(self, node: TreeNode[T] | None = None) -> TreeNode[T] | None:
         """
         Find the node with the maximum value.
 

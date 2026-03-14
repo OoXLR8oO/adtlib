@@ -1,8 +1,8 @@
-from typing import List, Union
 
-Number = Union[int, float]  # define a type alias for numbers
 
-def bubble_sort(arr: List[Number]) -> List[Number]:
+Number = int | float  # define a type alias for numbers
+
+def bubble_sort(arr: list[Number]) -> list[Number]:
     arr = arr.copy()
     n = len(arr)
     for i in range(n):
@@ -11,7 +11,7 @@ def bubble_sort(arr: List[Number]) -> List[Number]:
                 arr[j], arr[j + 1] = arr[j + 1], arr[j]
     return arr
 
-def selection_sort(arr: List[Number]) -> List[Number]:
+def selection_sort(arr: list[Number]) -> list[Number]:
     arr = arr.copy()
     n = len(arr)
     for i in range(n):
@@ -22,7 +22,7 @@ def selection_sort(arr: List[Number]) -> List[Number]:
         arr[i], arr[min_idx] = arr[min_idx], arr[i]
     return arr
 
-def insertion_sort(arr: List[Number]) -> List[Number]:
+def insertion_sort(arr: list[Number]) -> list[Number]:
     arr = arr.copy()
     for i in range(1, len(arr)):
         key = arr[i]
@@ -33,7 +33,7 @@ def insertion_sort(arr: List[Number]) -> List[Number]:
         arr[j + 1] = key
     return arr
 
-def merge_sort(arr: List[Number]) -> List[Number]:
+def merge_sort(arr: list[Number]) -> list[Number]:
     if len(arr) <= 1:
         return arr.copy()
 
@@ -41,7 +41,7 @@ def merge_sort(arr: List[Number]) -> List[Number]:
     left = merge_sort(arr[:mid])
     right = merge_sort(arr[mid:])
 
-    result: List[Number] = []
+    result: list[Number] = []
     i = j = 0
     while i < len(left) and j < len(right):
         if left[i] < right[j]:

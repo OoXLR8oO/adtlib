@@ -1,18 +1,16 @@
 from dataclasses import dataclass, field
-from typing import Iterator, List, Generic, TypeVar
+from collections.abc import Iterator
 
-
-T = TypeVar("T")
 
 @dataclass
-class Stack(Generic[T]):
+class Stack[T]:
     """
     Last-in, first-out (LIFO) stack.
 
     :param _data: Internal storage for stack items
-    :type _data: List[Any]
+    :type _data: list[Any]
     """
-    _data: List[T] = field(default_factory=list, repr=False)
+    _data: list[T] = field(default_factory=list, repr=False)
 
     def __len__(self) -> int:
         """
@@ -51,12 +49,12 @@ class Stack(Generic[T]):
         return f"Stack({self._data!r})"
 
     @property
-    def data(self) -> List[T]:
+    def data(self) -> list[T]:
         """
         Get the internal stack list (read-only).
 
         :return: List of items in the stack
-        :rtype: List[Any]
+        :rtype: list[Any]
         """
         return self._data
 

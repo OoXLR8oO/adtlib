@@ -1,21 +1,19 @@
 from dataclasses import dataclass, field
-from typing import Iterator, Iterable, Tuple, TypeVar, Generic
+from collections.abc import Iterator, Iterable
 from collections import deque
 import heapq
 from itertools import count
 
 
-T = TypeVar("T")
-
 @dataclass
-class Queue(Generic[T]):
+class Queue[T]:
     """
     First-in, first-out (FIFO) queue.
 
     A simple queue ADT with methods to enqueue, dequeue, peek, and check if empty.
 
     :param _data: Internal storage for queue items
-    :type _data: deque[Any]
+    :type _data: deque[T]
     """
     _data: deque[T] = field(default_factory=deque, repr=False)
 
@@ -34,7 +32,7 @@ class Queue(Generic[T]):
         Iterate over items from front to back.
 
         :return: Iterator yielding items in enqueue order
-        :rtype: Iterator[Any]
+        :rtype: Iterator[T]
         """
         return iter(self._data)
 
@@ -43,7 +41,7 @@ class Queue(Generic[T]):
         Iterate over items from back to front.
 
         :return: Reverse iterator yielding items
-        :rtype: Iterator[Any]
+        :rtype: Iterator[T]
         """
         return reversed(self._data)
 
@@ -63,7 +61,7 @@ class Queue(Generic[T]):
         Return a read-only view of the queue contents.
 
         :return: Iterable of items currently in the queue
-        :rtype: Iterable[Any]
+        :rtype: Iterable[T]
         """
         return self._data
 
@@ -73,7 +71,7 @@ class Queue(Generic[T]):
         Add an item to the back of the queue.
 
         :param item: Item to add to the queue
-        :type item: Any
+        :type item: T
         """
         self._data.append(item)
 
@@ -82,7 +80,7 @@ class Queue(Generic[T]):
         Remove and return the front item from the queue.
 
         :return: The earliest enqueued item
-        :rtype: Any
+        :rtype: T
         :raises IndexError: If the queue is empty
         """
         if self.is_empty():
@@ -94,7 +92,7 @@ class Queue(Generic[T]):
         Return the front item without removing it.
 
         :return: The earliest enqueued item
-        :rtype: Any
+        :rtype: T
         :raises IndexError: If the queue is empty
         """
         if self.is_empty():
@@ -116,7 +114,7 @@ class Queue(Generic[T]):
 
 
 @dataclass
-class Deque(Generic[T]):
+class Deque[T]:
     """
     Double-ended queue (Deque).
 
@@ -124,7 +122,7 @@ class Deque(Generic[T]):
     from both the front and the back.
 
     :param _data: Internal storage for deque items
-    :type _data: deque[Any]
+    :type _data: deque[T]
     """
     _data: deque[T] = field(default_factory=deque, repr=False)
 
@@ -143,7 +141,7 @@ class Deque(Generic[T]):
         Iterate over items from front to back.
 
         :return: Iterator yielding items from front to back
-        :rtype: Iterator[Any]
+        :rtype: Iterator[T]
         """
         return iter(self._data)
 
@@ -152,7 +150,7 @@ class Deque(Generic[T]):
         Iterate over items from back to front.
 
         :return: Reverse iterator yielding items
-        :rtype: Iterator[Any]
+        :rtype: Iterator[T]
         """
         return reversed(self._data)
 
@@ -172,7 +170,7 @@ class Deque(Generic[T]):
         Return a read-only view of the deque contents.
 
         :return: Iterable of items currently stored
-        :rtype: Iterable[Any]
+        :rtype: Iterable[T]
         """
         return self._data
 
@@ -182,7 +180,7 @@ class Deque(Generic[T]):
         Add an item to the back of the deque.
 
         :param item: Item to add
-        :type item: Any
+        :type item: T
         """
         self._data.append(item)
 
@@ -191,7 +189,7 @@ class Deque(Generic[T]):
         Add an item to the front of the deque.
 
         :param item: Item to add
-        :type item: Any
+        :type item: T
         """
         self._data.appendleft(item)
 
@@ -200,7 +198,7 @@ class Deque(Generic[T]):
         Remove and return the back item.
 
         :return: The last item
-        :rtype: Any
+        :rtype: T
         :raises IndexError: If the deque is empty
         """
         if self.is_empty():
@@ -212,7 +210,7 @@ class Deque(Generic[T]):
         Remove and return the front item.
 
         :return: The first item
-        :rtype: Any
+        :rtype: T
         :raises IndexError: If the deque is empty
         """
         if self.is_empty():
@@ -224,7 +222,7 @@ class Deque(Generic[T]):
         Return the front item without removing it.
 
         :return: The first item
-        :rtype: Any
+        :rtype: T
         :raises IndexError: If the deque is empty
         """
         if self.is_empty():
@@ -236,7 +234,7 @@ class Deque(Generic[T]):
         Return the back item without removing it.
 
         :return: The last item
-        :rtype: Any
+        :rtype: T
         :raises IndexError: If the deque is empty
         """
         if self.is_empty():
@@ -258,16 +256,16 @@ class Deque(Generic[T]):
 
 
 @dataclass
-class PriorityQueue(Generic[T]):
+class PriorityQueue[T]:
     """
     Priority queue where each element has a priority.
 
     Items are retrieved in order of priority (lowest number = highest priority).
 
     :param _data: Internal storage as a min-heap of tuples (priority, counter, item)
-    :type _data: list[Tuple[int, int, Any]]
+    :type _data: list[tuple[int, int, T]]
     """
-    _data: list[Tuple[int, int, T]] = field(default_factory=list, repr=False)
+    _data: list[tuple[int, int, T]] = field(default_factory=list, repr=False)
     _counter: count = field(default_factory=count, init=False, repr=False)
 
     def __len__(self) -> int:
@@ -284,7 +282,7 @@ class PriorityQueue(Generic[T]):
         Iterate over items by heap order (not strictly priority order).
 
         :return: Iterator yielding items in heap order
-        :rtype: Iterator[Any]
+        :rtype: Iterator[T]
         """
         return (item for _, _, item in self._data)
 
@@ -302,7 +300,7 @@ class PriorityQueue(Generic[T]):
         Add an item with a given priority.
 
         :param item: Item to add
-        :type item: Any
+        :type item: T
         :param priority: Priority of the item (lower = higher priority)
         :type priority: int
         """
@@ -313,7 +311,7 @@ class PriorityQueue(Generic[T]):
         Remove and return the item with the highest priority (lowest number).
 
         :return: Item with the highest priority
-        :rtype: Any
+        :rtype: T
         :raises IndexError: If the priority queue is empty
         """
         if self.is_empty():
@@ -325,7 +323,7 @@ class PriorityQueue(Generic[T]):
         Return the item with the highest priority without removing it.
 
         :return: Item with the highest priority
-        :rtype: Any
+        :rtype: T
         :raises IndexError: If the priority queue is empty
         """
         if self.is_empty():

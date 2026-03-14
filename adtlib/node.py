@@ -1,32 +1,28 @@
 from dataclasses import dataclass, field
-from typing import Optional, List, TypeVar, Generic
 from abc import ABC, abstractmethod
 
 
-T = TypeVar("T")
-
 @dataclass
-class BaseNode(ABC, Generic[T]):
+class BaseNode[T](ABC):
     """
     Abstract base class for all node types.
 
     :param _value: The value stored in the node (int, float, or None)
-    :type _value: int | float | None
+    :type _value: T | None
     :param _neighbours: Get the list of neighbours connected to this node.
-    :type _value: Any
+    :type _value: T | None
     """
-    _value: Optional[T] = None
-    _neighbours: Optional[List[BaseNode[T]]] = field(default=None, repr=False)
-
+    _value: T | None = None
+    _neighbours: list[BaseNode[T]] | None = field(default=None, repr=False)
 
     @property
     @abstractmethod
-    def value(self) -> Optional[T]:
+    def value(self) -> T | None:
         """
         Get the value stored in this node.
 
         :return: The current value of the node
-        :rtype: int | float | None
+        :rtype: T | None
         """
         ...
 
@@ -37,13 +33,13 @@ class BaseNode(ABC, Generic[T]):
         Set the value of this node.
 
         :param val: The value to store in the node
-        :type val: int | float | None
+        :type val: T | None
         """
         ...
 
     @property
     @abstractmethod
-    def neighbours(self) -> List[BaseNode[T]]:
+    def neighbours(self) -> list[BaseNode[T]]:
         """
         Return a list of nodes connected to this node.
         For graphs, this is neighbours.
@@ -53,21 +49,19 @@ class BaseNode(ABC, Generic[T]):
 
 
 @dataclass(eq=False)
-class GraphNode(BaseNode[T]):
+class GraphNode[T](BaseNode[T]):
     """
     Node used for graph or tree structures.
 
-    :param _value: The value stored in the node (int, float, or None)
-    :type _value: int | float | None
+    :param _value: The value stored in the node (T, or None)
+    :type _value: T | None
     :param _neighbours: List of connected nodes (edges), or None if no neighbours
-    :type _neighbours: Optional[List[GraphNode]]
+    :type _neighbours: GraphNode | None
     """
-    _neighbours: Optional[List[GraphNode[T]]] = field(default=None, repr=False)
-    
+    _neighbours: list[GraphNode[T]] | None = field(default=None, repr=False)
 
     def __repr__(self) -> str:
         neigh_vals = [n.value for n in self._neighbours] if self._neighbours else []
-        # return f"GraphNode(v={self.value}, n={neigh_vals})"
         return f"GraphNode(value={self.value}, neighbours={neigh_vals})"
 
     def __hash__(self) -> int:
@@ -78,14 +72,13 @@ class GraphNode(BaseNode[T]):
             return NotImplemented
         return id(self) == id(other)
 
-
     @property
-    def value(self) -> T:
+    def value(self) -> T | None:
         """
         Get the value stored in this graph node.
 
         :return: The current value of the node
-        :rtype: int | float | None
+        :rtype: T | None
         """
         return self._value
 
@@ -95,12 +88,12 @@ class GraphNode(BaseNode[T]):
         Set the value stored in this graph node.
 
         :param val: The value to store
-        :type val: int | float | None
+        :type val: T | None
         """
         self._value = val
 
     @property
-    def neighbours(self) -> List[GraphNode[T]]:
+    def neighbours(self) -> list[GraphNode[T]]:
         """
         Get the list of neighbours connected to this node.
         This returns a shallow copy with `.copy()`. External
@@ -108,22 +101,21 @@ class GraphNode(BaseNode[T]):
         the values in this list will affect the class' internal list.
 
         :return: List of neighbour nodes (or an empty list)
-        :rtype: List[GraphNode]
+        :rtype: list[GraphNode]
         """
         if self._neighbours is None:
             return []
         return self._neighbours.copy()
 
     @neighbours.setter
-    def neighbours(self, val: Optional[List[GraphNode[T]]]) -> None:
+    def neighbours(self, val: list[GraphNode[T]] | None) -> None:
         """
         Set the neighbours list.
 
         :param val: List of nodes to assign as neighbours
-        :type val: Optional[List[GraphNode]]
+        :type val: GraphNode | None
         """
         self._neighbours = val
-
 
     def add_neighbour(self, node: GraphNode[T]) -> None:
         """
@@ -176,34 +168,32 @@ class GraphNode(BaseNode[T]):
 
 
 @dataclass
-class LinkedNode(BaseNode[T]):
+class LinkedNode[T](BaseNode[T]):
     """
     Node used for linked list structures.
 
     :param _value: The value stored in the node (int, float, or None)
-    :type _value: int | float | None
+    :type _value: T | None
     :param _previous: Previous linked node or None
-    :type _previous: Optional[LinkedNode]
+    :type _previous: LinkedNode | None
     :param _next: Next linked node or None
-    :type _next: Optional[LinkedNode]
+    :type _next: LinkedNode | None
     """
-    _previous: Optional[LinkedNode[T]] = field(default=None, repr=False)
-    _next: Optional[LinkedNode[T]] = field(default=None, repr=False)
-
+    _previous: LinkedNode[T] | None = field(default=None, repr=False)
+    _next: LinkedNode[T] | None = field(default=None, repr=False)
 
     def __repr__(self) -> str:
         prev_val = self.previous.value if self.previous else None
         next_val = self.next.value if self.next else None
         return f"LinkedNode(value={self.value}, prev={prev_val}, next={next_val})"
 
-
     @property
-    def value(self) -> T:
+    def value(self) -> T | None:
         """
         Get the value stored in this linked node.
 
         :return: The current value of the node
-        :rtype: int | float | None
+        :rtype: T | None
         """
         return self._value
 
@@ -213,32 +203,29 @@ class LinkedNode(BaseNode[T]):
         Set the value stored in this linked node.
 
         :param val: The value to store
-        :type val: int | float | None
+        :type val: T | None
         """
         self._value = val
 
     @property
-    def previous(self) -> Optional[LinkedNode[T]]:
+    def previous(self) -> LinkedNode[T] | None:
         """
         Get the previous linked node.
 
         :return: The previous node or None
-        :rtype: Optional[LinkedNode]
+        :rtype: LinkedNode | None
         """
         return self._previous
 
     @previous.setter
-    def previous(self, node: Optional[LinkedNode[T]]) -> None:
+    def previous(self, node: LinkedNode[T] | None) -> None:
         """
         Set the previous node in the linked list.
 
         :param node: Node to link as previous
-        :type node: Optional[LinkedNode]
+        :type node: LinkedNode | None
         :raises ValueError: If attempting to link the node to itself
         """
-        if node is self:
-            raise ValueError("A node cannot link to itself")
-
         if self._previous and self._previous._next is self:
             self._previous._next = None
 
@@ -248,27 +235,24 @@ class LinkedNode(BaseNode[T]):
             node._next = self
 
     @property
-    def next(self) -> Optional[LinkedNode[T]]:
+    def next(self) -> LinkedNode[T] | None:
         """
         Get the next linked node.
 
         :return: The next node or None
-        :rtype: Optional[LinkedNode]
+        :rtype: LinkedNode | None
         """
         return self._next
 
     @next.setter
-    def next(self, node: Optional[LinkedNode[T]]) -> None:
+    def next(self, node: LinkedNode[T] | None) -> None:
         """
         Set the next node in the linked list.
 
         :param node: Node to link as next
-        :type node: Optional[LinkedNode]
+        :type node: LinkedNode | None
         :raises ValueError: If attempting to link the node to itself
         """
-        if node is self:
-            raise ValueError("A node cannot link to itself")
-
         if self._next and self._next._previous is self:
             self._next._previous = None
 
@@ -278,9 +262,8 @@ class LinkedNode(BaseNode[T]):
             node._previous = self
 
     @property
-    def neighbours(self) -> List[BaseNode[T]]:
+    def neighbours(self) -> list[BaseNode[T]]:
         return [n for n in (self.next,) if n is not None]
-            
 
     def add_previous(self, node: LinkedNode[T]) -> None:
         """
@@ -304,43 +287,43 @@ class LinkedNode(BaseNode[T]):
         """
         Fully unlink this node from its previous and next neighbours.
         """
-        if self._previous: self._previous._next = None
-        if self._next: self._next._previous = None
+        if self._previous:
+            self._previous._next = None
+        if self._next:
+            self._next._previous = None
         self._previous = self._next = None
 
 
 @dataclass
-class TreeNode(BaseNode[T]):
+class TreeNode[T](BaseNode[T]):
     """
     Node used for binary tree structures.
 
     :param _value: The value stored in the node (int, float, or None)
-    :type _value: int | float | None
+    :type _value: T | None
     :param _left: Left child node or None
-    :type _left: Optional[TreeNode]
+    :type _left: TreeNode | None
     :param _right: Right child node or None
-    :type _right: Optional[TreeNode]
+    :type _right: TreeNode | None
     :param _parent: Parent node or None
-    :type _parent: Optional[TreeNode]
+    :type _parent: TreeNode | None
     """
-    _left: Optional[TreeNode[T]] = field(default=None, repr=False)
-    _right: Optional[TreeNode[T]] = field(default=None, repr=False)
-    _parent: Optional[TreeNode[T]] = field(default=None, repr=False)
-
+    _left: TreeNode[T] | None = field(default=None, repr=False)
+    _right: TreeNode[T] | None = field(default=None, repr=False)
+    _parent: TreeNode[T] | None = field(default=None, repr=False)
 
     def __repr__(self) -> str:
         left_val = self.left.value if self.left else None
         right_val = self.right.value if self.right else None
         return f"TreeNode(value={self.value}, left={left_val}, right={right_val})"
 
-
     @property
-    def value(self) -> T:
+    def value(self) -> T | None:
         """
         Get the value stored in this tree node.
 
         :return: The current value of the node
-        :rtype: int | float | None
+        :rtype: T | None
         """
         return self._value
 
@@ -350,27 +333,27 @@ class TreeNode(BaseNode[T]):
         Set the value stored in this tree node.
 
         :param val: The value to store
-        :type val: int | float | None
+        :type val: T | None
         """
         self._value = val
 
     @property
-    def left(self) -> Optional[TreeNode[T]]:
+    def left(self) -> TreeNode[T] | None:
         """
         Get the left child node.
 
         :return: The left child or None
-        :rtype: Optional[TreeNode]
+        :rtype: TreeNode | None
         """
         return self._left
 
     @left.setter
-    def left(self, node: Optional[TreeNode[T]]) -> None:
+    def left(self, node: TreeNode[T] | None) -> None:
         """
         Set the left child node.
 
         :param node: Node to assign as left child
-        :type node: Optional[TreeNode]
+        :type node: TreeNode | None
         :raises ValueError: If attempting to assign the node to itself
         """
         if node is self:
@@ -385,22 +368,22 @@ class TreeNode(BaseNode[T]):
             node._parent = self
 
     @property
-    def right(self) -> Optional[TreeNode[T]]:
+    def right(self) -> TreeNode[T] | None:
         """
         Get the right child node.
 
         :return: The right child or None
-        :rtype: Optional[TreeNode]
+        :rtype: TreeNode | None
         """
         return self._right
 
     @right.setter
-    def right(self, node: Optional[TreeNode[T]]) -> None:
+    def right(self, node: TreeNode[T] | None) -> None:
         """
         Set the right child node.
 
         :param node: Node to assign as right child
-        :type node: Optional[TreeNode]
+        :type node: TreeNode | None
         :raises ValueError: If attempting to assign the node to itself
         """
         if node is self:
@@ -415,19 +398,18 @@ class TreeNode(BaseNode[T]):
             node._parent = self
 
     @property
-    def parent(self) -> Optional[TreeNode]:
+    def parent(self) -> TreeNode[T] | None:
         """
         Get the parent node.
 
         :return: The parent node or None
-        :rtype: Optional[TreeNode]
+        :rtype: TreeNode | None
         """
         return self._parent
 
     @property
-    def neighbours(self) -> List[BaseNode[T]]:
+    def neighbours(self) -> list[BaseNode[T]]:
         return [child for child in (self.left, self.right) if child is not None]
-
 
     def is_leaf(self) -> bool:
         """

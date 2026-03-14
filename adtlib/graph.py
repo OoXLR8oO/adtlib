@@ -1,12 +1,9 @@
 from dataclasses import dataclass, field
-from typing import List, Dict, TypeVar, Generic
 from adtlib.node import GraphNode
 
 
-T = TypeVar("T")
-
 @dataclass
-class Graph(Generic[T]):
+class Graph[T]:
     """
     Graph ADT using GraphNode instances.
 
@@ -14,47 +11,47 @@ class Graph(Generic[T]):
     adding/removing nodes and edges, BFS and DFS traversal, and weighted edges.
 
     :param _nodes: List of all nodes in the graph
-    :type _nodes: List[GraphNode]
+    :type _nodes: list[GraphNode]
     :param _node_map: Dictionary mapping node values to GraphNode instances
-    :type _node_map: Dict[T, GraphNode[T]]
+    :type _node_map: dict[T, GraphNode[T]]
     :param _weights: Dictionary storing edge weights as (source, target) -> weight
-    :type _weights: Dict[tuple[GraphNode[T], GraphNode[T]], float]
+    :type _weights: dict[tuple[GraphNode[T], GraphNode[T]], float]
     :param _directed: Whether the graph is directed
     :type _directed: bool
     """
-    _nodes: List[GraphNode[T]] = field(default_factory=list, repr=False)
-    _node_map: Dict[T, GraphNode[T]] = field(default_factory=dict, repr=False)
-    _weights: Dict[tuple[GraphNode[T], GraphNode[T]], float] = field(default_factory=dict, repr=False)
+    _nodes: list[GraphNode[T]] = field(default_factory=list, repr=False)
+    _node_map: dict[T, GraphNode[T]] = field(default_factory=dict, repr=False)
+    _weights: dict[tuple[GraphNode[T], GraphNode[T]], float] = field(default_factory=dict, repr=False)
     _directed: bool = False
 
     @property
-    def nodes(self) -> List[GraphNode[T]]:
+    def nodes(self) -> list[GraphNode[T]]:
         """
         Get the list of all nodes in the graph.
 
         :return: List of GraphNode instances
-        :rtype: List[GraphNode]
+        :rtype: list[GraphNode]
         """
         return self._nodes
 
     @nodes.setter
-    def nodes(self, value: List[GraphNode[T]]) -> None:
+    def nodes(self, value: list[GraphNode[T]]) -> None:
         """
         Set the list of nodes in the graph.
 
         :param value: List of GraphNode instances
-        :type value: List[GraphNode]
+        :type value: list[GraphNode]
         """
         self._nodes = value
         self._node_map = {node.value: node for node in value}
 
     @property
-    def weights(self) -> Dict[tuple[GraphNode[T], GraphNode[T]], float]:
+    def weights(self) -> dict[tuple[GraphNode[T], GraphNode[T]], float]:
         """
         Get a read-only view of the graph's edge weights.
 
         :return: Dictionary mapping (node1, node2) tuples to edge weights
-        :rtype: Dict[tuple[GraphNode, GraphNode], float]
+        :rtype: dict[tuple[GraphNode, GraphNode], float]
         """
         return self._weights.copy()
 
