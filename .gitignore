@@ -10,7 +10,8 @@ wheels/
 .venv
 
 # Custom files
-/cmd.txt
+cmd.txt
+run.py
 
 # Custom folder
 tests
